@@ -124,6 +124,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "admin_dashboard"
+LOGOUT_REDIRECT_URL = "login"
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # WhiteNoise for serving static files in production
