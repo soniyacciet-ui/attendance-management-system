@@ -1,0 +1,43 @@
+﻿# Environment variables
+.env
+.env.local
+.env.production
+
+# Database
+db.sqlite3
+db.sqlite3-journal
+db_backup*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+venv/
+.venv/
+env/
+
+# Django
+*.log
+staticfiles/
+media/voice/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Extra files
+*.zip
+db_current.sqlite3
+attendance_management/.gitignore
+attendance/send_sms.py
+
+# Extra files
+*.zip
+db_current.sqlite3
+attendance_management/.gitignore
+attendance/send_sms.py

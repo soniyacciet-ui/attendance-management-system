@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Control | {{ college.name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f0f4fa; padding: 2rem 1.5rem; color: #0b1e33; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card { background: white; border-radius: 24px; padding: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.04); margin-bottom: 1.5rem; }
+        h1 { font-size: 1.5rem; color: #0b2b4a; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.5rem; }
+        h1 i { color: #2563eb; }
+        .subtitle { color: #6b7f99; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .role-card {
+            background: #f8fafd; border-radius: 16px; padding: 1.5rem;
+            text-align: center; border: 1px solid #e2e8f0;
+        }
+        .role-card .icon { font-size: 2rem; margin-bottom: 0.8rem; }
+        .role-card .count { font-size: 2rem; font-weight: 700; color: #0b2b4a; }
+        .role-card .label { font-size: 0.75rem; text-transform: uppercase; color: #6b7f99; font-weight: 600; margin-top: 0.3rem; }
+        .back { display: inline-flex; align-items: center; gap: 0.4rem; color: #2563eb; text-decoration: none; font-size: 0.9rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="{% url 'admin_dashboard' %}" class="back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+    <div class="card">
+        <h1><i class="fas fa-shield"></i> Access Control</h1>
+        <p class="subtitle">Roles and users per role in {{ college.name }}</p>
+
+        <div class="grid">
+            <div class="role-card">
+                <div class="icon" style="color:#dc2626;"><i class="fas fa-crown"></i></div>
+                <div class="count">{{ role_counts.ADMIN }}</div>
+                <div class="label">Admins</div>
+            </div>
+            <div class="role-card">
+                <div class="icon" style="color:#b45309;"><i class="fas fa-user-tie"></i></div>
+                <div class="count">{{ role_counts.HOD }}</div>
+                <div class="label">HODs</div>
+            </div>
+            <div class="role-card">
+                <div class="icon" style="color:#4f46e5;"><i class="fas fa-chalkboard-user"></i></div>
+                <div class="count">{{ role_counts.STAFF }}</div>
+                <div class="label">Staff</div>
+            </div>
+            <div class="role-card">
+                <div class="icon" style="color:#1e40af;"><i class="fas fa-user-graduate"></i></div>
+                <div class="count">{{ role_counts.STUDENT }}</div>
+                <div class="label">Students</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

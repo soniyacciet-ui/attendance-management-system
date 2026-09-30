@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Change HOD</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .container {
+            width: 500px;
+            max-width: 90%;
+            margin: 60px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #0b2b4a;
+            margin-bottom: 10px;
+        }
+
+        .department {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            margin-bottom: 7px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #0b2b4a;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #b00020;
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 15px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button,
+        .cancel {
+            flex: 1;
+            padding: 12px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        button {
+            border: none;
+            background: #0b2b4a;
+            color: white;
+        }
+
+        button:hover {
+            background: #1a3f62;
+        }
+
+        .cancel {
+            border: 1px solid #ccc;
+            color: #555;
+            background: white;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>
+        <i class="fas fa-user-edit"></i>
+        Change HOD
+    </h1>
+
+    <p class="department">
+        Department: <strong>{{ department.name }}</strong>
+    </p>
+
+    {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <label>
+            HOD Name
+        </label>
+
+        <input
+            type="text"
+            name="name"
+            value="{{ hod.user.first_name }}"
+            required
+        >
+
+        <label>
+            HOD ID
+        </label>
+
+        <input
+            type="text"
+            name="hod_id"
+            value="{{ hod.user.username }}"
+            required
+        >
+
+        <label>
+            New Password
+        </label>
+
+        <input
+            type="password"
+            name="password"
+            placeholder="Leave blank to keep current password"
+        >
+
+        <div class="buttons">
+
+            <a
+                href="{% url 'department_details' department.id %}"
+                class="cancel">
+                Cancel
+            </a>
+
+            <button type="submit">
+                Change HOD
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

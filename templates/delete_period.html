@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Period | {{ period.department.name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f0f4fa; padding: 3rem 1.5rem; }
+        .container { max-width: 480px; margin: 0 auto; }
+        .card {
+            background: white; border-radius: 24px; padding: 2.5rem 2rem;
+            text-align: center; box-shadow: 0 10px 30px -12px rgba(11,43,74,0.15);
+        }
+        .icon {
+            width: 72px; height: 72px; margin: 0 auto 1.2rem;
+            border-radius: 50%; background: #fef2f2; color: #dc2626;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+        }
+        h1 { font-size: 1.4rem; color: #0b2b4a; margin-bottom: 0.5rem; }
+        p { color: #6b7f99; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem; }
+        .period-info {
+            background: #f8fafd; padding: 1rem 1.5rem; border-radius: 14px;
+            margin: 1.5rem 0;
+        }
+        .period-info strong { color: #0b2b4a; font-size: 1.1rem; display: block; margin-bottom: 0.3rem; }
+        .period-info span { color: #2563eb; font-size: 0.9rem; }
+        .btn-row { display: flex; gap: 0.6rem; margin-top: 1.5rem; }
+        .btn {
+            flex: 1; padding: 0.9rem; border: none; border-radius: 40px;
+            font-family: inherit; font-size: 0.95rem; font-weight: 600;
+            cursor: pointer; text-decoration: none;
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 0.4rem;
+        }
+        .btn-cancel { background: #f1f4f9; color: #374151; border: 1px solid #e2e8f0; }
+        .btn-delete { background: #dc2626; color: white; }
+        .btn-delete:hover { background: #b91c1c; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="icon"><i class="fas fa-triangle-exclamation"></i></div>
+        <h1>Delete Period?</h1>
+        <p>This action cannot be undone.</p>
+
+        <div class="period-info">
+            <strong>Period {{ period.number }}</strong>
+            <span>{{ period.start_time|time:"H:i" }} - {{ period.end_time|time:"H:i" }}</span>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="btn-row">
+                <a href="{% url 'manage_periods' period.department.id %}" class="btn btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-delete">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

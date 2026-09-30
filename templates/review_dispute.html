@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Request</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f0f4fa; padding: 2rem 1.5rem; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .card { background: white; border-radius: 24px; padding: 2.2rem; max-width: 600px; width: 100%; box-shadow: 0 20px 40px -12px rgba(11,43,74,0.15); }
+        h1 { font-size: 1.4rem; color: #0b2b4a; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+        h1 i { color: #2563eb; }
+        .info-block { background: #f8fafd; padding: 1.2rem 1.5rem; border-radius: 16px; margin-bottom: 1.2rem; }
+        .info-block .label { font-size: 0.7rem; text-transform: uppercase; color: #6b7f99; font-weight: 600; margin-bottom: 0.3rem; }
+        .info-block .value { color: #0b2b4a; font-weight: 500; }
+        .reason-block { background: #fffbeb; padding: 1.2rem 1.5rem; border-radius: 16px; margin-bottom: 1.5rem; border-left: 4px solid #f59e0b; }
+        textarea { width: 100%; padding: 1rem; border: 1.5px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 0.95rem; background: #f8fafd; resize: vertical; min-height: 80px; outline: none; }
+        textarea:focus { border-color: #2563eb; background: white; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7f99; margin-bottom: 0.4rem; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; margin-top: 1.5rem; }
+        .btn { padding: 0.9rem; border: none; border-radius: 40px; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; }
+        .btn-cancel { background: #f1f4f9; color: #374151; border: 1px solid #e2e8f0; }
+        .btn-approve { background: #16a34a; color: white; }
+        .btn-reject { background: #dc2626; color: white; }
+        @media (max-width: 600px) { .btn-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="card">
+
+    <h1><i class="fas fa-gavel"></i> Review Request</h1>
+
+    <div class="info-block">
+        <div class="label">Student</div>
+        <div class="value">{{ dispute.student.user.get_full_name|default:dispute.student.user.username }}</div>
+        <div class="value" style="font-size:0.85rem;color:#6b7f99;">{{ dispute.student.register_number }} · {{ dispute.student.department.name }}</div>
+    </div>
+
+    <div class="info-block">
+        <div class="label">Attendance Record</div>
+        <div class="value">
+            {{ dispute.attendance.date|date:"l, d M Y" }}
+            {% if dispute.attendance.subject %} · {{ dispute.attendance.subject.name }}{% endif %}
+            {% if dispute.attendance.period %} · Period {{ dispute.attendance.period.number }}{% endif %}
+        </div>
+        <div class="value" style="color:#dc2626;margin-top:0.3rem;">
+            Currently: {{ dispute.attendance.status }}
+        </div>
+    </div>
+
+    <div class="reason-block">
+        <div class="label">Student's Reason</div>
+        <div style="color:#78350f;margin-top:0.3rem;">{{ dispute.reason }}</div>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="review_note">Review Note (optional)</label>
+        <textarea name="review_note" id="review_note" placeholder="Add a note visible to the student..."></textarea>
+
+        <div class="btn-row">
+            <a href="{% url 'manage_disputes' %}" class="btn btn-cancel">
+                <i class="fas fa-arrow-left"></i> Cancel
+            </a>
+            <button type="submit" name="action" value="reject" class="btn btn-reject">
+                <i class="fas fa-times"></i> Reject
+            </button>
+            <button type="submit" name="action" value="approve" class="btn btn-approve">
+                <i class="fas fa-check"></i> Approve
+            </button>
+        </div>
+    </form>
+
+</div>
+</body>
+</html>

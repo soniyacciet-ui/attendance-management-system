@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ department.name }} | Attendance System</title>
+
+    <!-- Google Font & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: #f0f4fa;
+            color: #0b1e33;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #0b2b4a;
+            color: white;
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            z-index: 1000;
+            border-right: 1px solid rgba(255, 255, 255, 0.04);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            padding: 0.5rem 0.5rem 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 0.3rem;
+        }
+
+        .logo i {
+            color: #7bb3ff;
+            font-size: 1.5rem;
+        }
+
+        .college-name {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.7rem;
+            padding: 0.5rem 0.5rem 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .menu-title {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.8rem 0.8rem 0.4rem;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .menu a i {
+            width: 1.4rem;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.3);
+            transition: color 0.2s ease;
+        }
+
+        .menu a:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+        }
+
+        .menu a:hover i {
+            color: #7bb3ff;
+        }
+
+        .menu a.active {
+            background: rgba(37, 99, 235, 0.25);
+            color: white;
+        }
+
+        .menu a.active i {
+            color: #7bb3ff;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* ================= TOPBAR ================= */
+
+        .topbar {
+            height: 72px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2.2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .topbar-left .dept-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: rgba(37, 99, 235, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 1.4rem;
+        }
+
+        .topbar-left h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .topbar-left .subtitle {
+            font-size: 0.8rem;
+            color: #6b7f99;
+            display: block;
+            margin-top: 0.05rem;
+        }
+
+        .topbar-left .subtitle i {
+            margin: 0 0.2rem;
+            font-size: 0.4rem;
+            opacity: 0.4;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            background: white;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: #f8fafd;
+            border-color: #cbd5e1;
+            transform: translateX(-2px);
+        }
+
+        .back-btn i {
+            font-size: 0.8rem;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content {
+            padding: 2rem 2.2rem 3rem;
+        }
+
+        /* ================= XAI PANEL ================= */
+
+        .xai-panel {
+            background: white;
+            border-radius: 24px;
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .xai-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .xai-panel-header i {
+            color: #2563eb;
+            opacity: 0.5;
+            font-size: 1.1rem;
+        }
+
+        .xai-panel-header h2 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            margin: 0;
+        }
+
+        .health-banner {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.2rem 1.4rem;
+            border-radius: 18px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .health-banner.excellent {
+            background: linear-gradient(135deg, #dcfce7, #ecfdf5);
+            border: 1px solid #86efac;
+        }
+        .health-banner.good {
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            border: 1px solid #93c5fd;
+        }
+        .health-banner.needs-attention {
+            background: linear-gradient(135deg, #fffbeb, #fefce8);
+            border: 1px solid #fcd34d;
+        }
+        .health-banner.critical {
+            background: linear-gradient(135deg, #fee2e2, #fef2f2);
+            border: 1px solid #fca5a5;
+        }
+        .health-banner.no-data {
+            background: linear-gradient(135deg, #f1f5f9, #f8fafc);
+            border: 1px solid #cbd5e1;
+        }
+
+        .health-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            color: white;
+        }
+        .health-icon.excellent { background: #22c55e; }
+        .health-icon.good { background: #3b82f6; }
+        .health-icon.needs-attention { background: #f59e0b; }
+        .health-icon.critical { background: #dc2626; }
+        .health-icon.no-data { background: #94a3b8; }
+
+        .health-text h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+        }
+        .health-text h3.excellent { color: #15803d; }
+        .health-text h3.good { color: #1d4ed8; }
+        .health-text h3.needs-attention { color: #b45309; }
+        .health-text h3.critical { color: #dc2626; }
+        .health-text h3.no-data { color: #475569; }
+
+        .health-text p {
+            font-size: 0.9rem;
+            color: #4a6a8a;
+        }
+
+        .health-average {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .health-average .value {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .health-average .value.excellent { color: #16a34a; }
+        .health-average .value.good { color: #2563eb; }
+        .health-average .value.needs-attention { color: #d97706; }
+        .health-average .value.critical { color: #dc2626; }
+        .health-average .value.no-data { color: #6b7f99; }
+
+        .health-average small {
+            color: #6b7f99;
+            font-size: 0.75rem;
+        }
+
+        /* ---------- SUMMARY STATS ---------- */
+
+        .xai-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .xai-stat {
+            padding: 0.9rem 1.1rem;
+            border-radius: 14px;
+        }
+
+        .xai-stat.eligible {
+            background: #f0fdf4;
+            border: 1px solid #d1fae5;
+        }
+        .xai-stat.warning {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+        }
+        .xai-stat.critical {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+        .xai-stat.no-data {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+        }
+
+        .xai-stat .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+        .xai-stat.eligible .label { color: #16a34a; }
+        .xai-stat.warning .label { color: #b45309; }
+        .xai-stat.critical .label { color: #dc2626; }
+        .xai-stat.no-data .label { color: #64748b; }
+
+        .xai-stat .number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0.2rem;
+        }
+        .xai-stat.eligible .number { color: #15803d; }
+        .xai-stat.warning .number { color: #d97706; }
+        .xai-stat.critical .number { color: #dc2626; }
+        .xai-stat.no-data .number { color: #475569; }
+
+        /* ---------- SECTION SUBHEADER ---------- */
+
+        .xai-subheader {
+            font-size: 0.85rem;
+            color: #6b7f99;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+        }
+
+        .xai-subheader i {
+            opacity: 0.5;
+            margin-right: 0.3rem;
+        }
+
+        /* ---------- INSIGHTS LIST ---------- */
+
+        .xai-insights {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .xai-insights li {
+            padding: 0.7rem 1rem 0.7rem 2.4rem;
+            margin-bottom: 0.5rem;
+            background: #f8fafd;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #1a3650;
+            position: relative;
+            border-left: 3px solid #2563eb;
+            line-height: 1.5;
+        }
+
+        .xai-insights li::before {
+            content: "";
+            position: absolute;
+            left: 0.9rem;
+            top: 0.95rem;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #2563eb;
+        }
+
+        /* ---------- AT-RISK STUDENTS ---------- */
+
+        .at-risk-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .at-risk-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .at-risk-item.critical {
+            background: #fef2f2;
+            border-left: 3px solid #dc2626;
+        }
+
+        .at-risk-item.warning {
+            background: #fffbeb;
+            border-left: 3px solid #f59e0b;
+        }
+
+        .at-risk-item .name {
+            font-weight: 600;
+            color: #0b2b4a;
+            font-size: 0.9rem;
+        }
+
+        .at-risk-item .reg {
+            font-size: 0.75rem;
+            color: #6b7f99;
+            margin-top: 0.1rem;
+        }
+
+        .at-risk-item .stat-right {
+            text-align: right;
+        }
+
+        .at-risk-item .percent {
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+        .at-risk-item.critical .percent { color: #dc2626; }
+        .at-risk-item.warning .percent { color: #d97706; }
+
+        .at-risk-item .gap {
+            font-size: 0.7rem;
+            color: #6b7f99;
+        }
+
+        /* ================= CARDS ================= */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            border-radius: 24px;
+            padding: 1.8rem 1.8rem 2rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px -8px rgba(11, 43, 74, 0.08);
+        }
+
+        .card .icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .icon-student {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+        .icon-staff {
+            background: #ecfdf5;
+            color: #059669;
+        }
+        .icon-hod {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            margin: 0 0 0.2rem;
+        }
+
+        .card-description {
+            color: #6b7f99;
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+            line-height: 1.5;
+        }
+
+        .card .count {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.02em;
+        }
+
+        .card .count-label {
+            color: #8ba0b8;
+            font-size: 0.75rem;
+            margin-top: -0.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .card .view-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: #0b2b4a;
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            margin-top: auto;
+        }
+
+        .card .view-btn i {
+            font-size: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+
+        .card .view-btn:hover {
+            background: #1a3f62;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px -6px rgba(11, 43, 74, 0.25);
+        }
+
+        .card .view-btn:hover i {
+            transform: translateX(4px);
+        }
+
+        /* ----- HOD specific ----- */
+
+        .hod-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            margin-bottom: 0.1rem;
+        }
+
+        .hod-username {
+            color: #6b7f99;
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .not-assigned {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+            font-style: italic;
+        }
+
+        /* ----- add-btn (mark attendance) ----- */
+
+        .add-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.7rem 1rem;
+            margin-top: 0.6rem;
+            background: #059669;
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .add-btn i {
+            font-size: 0.75rem;
+        }
+
+        .add-btn:hover {
+            background: #047857;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px -6px rgba(5, 150, 105, 0.3);
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: #0b2b4a;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 999;
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 1100px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main {
+                margin-left: 0;
+            }
+            .topbar {
+                padding: 0 1.2rem;
+                height: auto;
+                min-height: 64px;
+            }
+            .content {
+                padding: 1.2rem;
+            }
+            .cards {
+                grid-template-columns: 1fr;
+            }
+            .hamburger {
+                display: flex !important;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .health-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+            .health-average {
+                margin-left: 0;
+                text-align: center;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .xai-panel {
+                padding: 1.3rem 1.4rem;
+            }
+            .topbar-left h1 {
+                font-size: 1.2rem;
+            }
+            .topbar-left .dept-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR OVERLAY (mobile) -->
+    <!-- ================================================= -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR -->
+    <!-- ================================================= -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-clipboard-check"></i>
+            Attendance System
+        </div>
+        <div class="college-name">
+            <i class="fas fa-building-columns" style="margin-right:0.4rem;opacity:0.5;"></i>
+            {{ college.name }}
+        </div>
+
+        <div class="menu-title">Main Menu</div>
+        <div class="menu">
+            <a href="{% url 'admin_dashboard' %}">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </a>
+            <a href="{% url 'manage_departments' %}">
+                <i class="fas fa-building-columns"></i> Departments
+            </a>
+            <a href="{% url 'manage_students' %}">
+                <i class="fas fa-user-graduate"></i> Students
+            </a>
+            <a href="#">
+                <i class="fas fa-chalkboard-user"></i> Staff
+            </a>
+            <a href="#">
+                <i class="fas fa-user-tie"></i> HODs
+            </a>
+            <a href="#">
+                <i class="fas fa-clipboard-list"></i> Attendance
+            </a>
+        </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- MAIN CONTENT -->
+    <!-- ================================================= -->
+    <div class="main">
+
+        <!-- TOP BAR -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="dept-icon">
+                    <i class="fas fa-building-columns"></i>
+                </div>
+                <div>
+                    <h1>{{ department.name }}</h1>
+                    <span class="subtitle">
+                        {{ college.name }}
+                        <i class="fas fa-circle"></i>
+                        Department Management
+                    </span>
+                </div>
+            </div>
+            <a href="{% url 'manage_departments' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Departments
+            </a>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- ============================================= -->
+            <!-- XAI: DEPARTMENT HEALTH PANEL                  -->
+            <!-- ============================================= -->
+            {% if dept_xai %}
+
+            <div class="xai-panel">
+
+                <div class="xai-panel-header">
+                    <i class="fas fa-stethoscope"></i>
+                    <h2>Department Health Analysis</h2>
+                </div>
+
+                <!-- Health banner -->
+                <div class="health-banner
+                    {% if dept_xai.health == 'EXCELLENT' %}excellent
+                    {% elif dept_xai.health == 'GOOD' %}good
+                    {% elif dept_xai.health == 'NEEDS ATTENTION' %}needs-attention
+                    {% elif dept_xai.health == 'CRITICAL' %}critical
+                    {% else %}no-data{% endif %}">
+
+                    <div class="health-icon
+                        {% if dept_xai.health == 'EXCELLENT' %}excellent
+                        {% elif dept_xai.health == 'GOOD' %}good
+                        {% elif dept_xai.health == 'NEEDS ATTENTION' %}needs-attention
+                        {% elif dept_xai.health == 'CRITICAL' %}critical
+                        {% else %}no-data{% endif %}">
+                        {% if dept_xai.health == 'EXCELLENT' %}
+                            <i class="fas fa-star"></i>
+                        {% elif dept_xai.health == 'GOOD' %}
+                            <i class="fas fa-thumbs-up"></i>
+                        {% elif dept_xai.health == 'NEEDS ATTENTION' %}
+                            <i class="fas fa-exclamation"></i>
+                        {% elif dept_xai.health == 'CRITICAL' %}
+                            <i class="fas fa-triangle-exclamation"></i>
+                        {% else %}
+                            <i class="fas fa-info"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="health-text">
+                        <h3 class="
+                            {% if dept_xai.health == 'EXCELLENT' %}excellent
+                            {% elif dept_xai.health == 'GOOD' %}good
+                            {% elif dept_xai.health == 'NEEDS ATTENTION' %}needs-attention
+                            {% elif dept_xai.health == 'CRITICAL' %}critical
+                            {% else %}no-data{% endif %}">
+                            {{ dept_xai.health }}
+                        </h3>
+                        <p>{{ dept_xai.health_message }}</p>
+                    </div>
+
+                    <div class="health-average">
+                        <div class="value
+                            {% if dept_xai.health == 'EXCELLENT' %}excellent
+                            {% elif dept_xai.health == 'GOOD' %}good
+                            {% elif dept_xai.health == 'NEEDS ATTENTION' %}needs-attention
+                            {% elif dept_xai.health == 'CRITICAL' %}critical
+                            {% else %}no-data{% endif %}">
+                            {{ dept_xai.average }}%
+                        </div>
+                        <small>Average</small>
+                    </div>
+
+                </div>
+
+                <!-- Summary stats -->
+                <div class="xai-stats">
+                    <div class="xai-stat eligible">
+                        <div class="label">
+                            <i class="fas fa-check-circle"></i> Eligible
+                        </div>
+                        <div class="number">{{ dept_xai.eligible_count }}</div>
+                    </div>
+
+                    <div class="xai-stat warning">
+                        <div class="label">
+                            <i class="fas fa-exclamation-circle"></i> Warning
+                        </div>
+                        <div class="number">{{ dept_xai.warning_count }}</div>
+                    </div>
+
+                    <div class="xai-stat critical">
+                        <div class="label">
+                            <i class="fas fa-times-circle"></i> Critical
+                        </div>
+                        <div class="number">{{ dept_xai.critical_count }}</div>
+                    </div>
+
+                    <div class="xai-stat no-data">
+                        <div class="label">
+                            <i class="fas fa-minus-circle"></i> No Data
+                        </div>
+                        <div class="number">{{ dept_xai.no_data_count }}</div>
+                    </div>
+                </div>
+
+                <!-- Key Insights -->
+                {% if dept_xai.insights %}
+                <h4 class="xai-subheader">
+                    <i class="fas fa-lightbulb"></i>
+                    Key Insights
+                </h4>
+                <ul class="xai-insights">
+                    {% for insight in dept_xai.insights %}
+                        <li>{{ insight }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                <!-- At-Risk Students -->
+                {% if dept_xai.at_risk_students %}
+                <h4 class="xai-subheader">
+                    <i class="fas fa-user-exclamation"></i>
+                    At-Risk Students
+                </h4>
+                <div class="at-risk-list">
+                    {% for item in dept_xai.at_risk_students %}
+                        <div class="at-risk-item
+                            {% if item.severity == 'CRITICAL' %}critical{% else %}warning{% endif %}">
+                            <div>
+                                <div class="name">
+                                    {{ item.student.user.get_full_name|default:item.student.user.username }}
+                                </div>
+                                <div class="reg">
+                                    Reg: {{ item.student.register_number }}
+                                </div>
+                            </div>
+                            <div class="stat-right">
+                                <div class="percent">{{ item.percentage }}%</div>
+                                <div class="gap">{{ item.gap }}% below required</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+
+            <!-- ============================================= -->
+            <!-- MAIN CARDS                                    -->
+            <!-- ============================================= -->
+            <div class="cards">
+
+                <!-- STUDENTS -->
+                <div class="card">
+                    <div class="icon icon-student">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h2>Students</h2>
+                    <div class="card-description">
+                        Students belonging to {{ department.name }}.
+                    </div>
+                    <div class="count">{{ students|length }}</div>
+                    <div class="count-label">Total Students</div>
+                    <a href="{% url 'department_students' department.id %}" class="view-btn">
+                        View Students <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="{% url 'mark_attendance' department.id %}" class="add-btn">
+                        <i class="fas fa-clipboard-check"></i> Mark Attendance
+                    </a>
+                </div>
+
+                <!-- STAFF -->
+                <div class="card">
+                    <div class="icon icon-staff">
+                        <i class="fas fa-chalkboard-user"></i>
+                    </div>
+                    <h2>Staff</h2>
+                    <div class="card-description">
+                        Teaching staff working in this department.
+                    </div>
+                    <div class="count">{{ staff|length }}</div>
+                    <div class="count-label">Total Staff</div>
+                    <a href="{% url 'department_staff' department.id %}" class="view-btn">
+                        View Staff <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <!-- HOD -->
+                <div class="card">
+                    <div class="icon icon-hod">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h2>Head of Department</h2>
+                    <div class="card-description">
+                        Department leadership information.
+                    </div>
+
+                    {% if hod %}
+                        <div class="hod-name">
+                            {{ hod.user.get_full_name|default:hod.user.username }}
+                        </div>
+                        <div class="hod-username">
+                            <i class="fas fa-user-circle" style="opacity:0.5;margin-right:0.3rem;"></i>
+                            {{ hod.user.username }}
+                        </div>
+                    {% else %}
+                        <div class="not-assigned">
+                            <i class="fas fa-user-slash" style="opacity:0.4;margin-right:0.3rem;"></i>
+                            No HOD assigned yet.
+                        </div>
+                    {% endif %}
+
+                    <a href="{% url 'department_hod' department.id %}" class="view-btn">
+                        View HOD <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR TOGGLE SCRIPT (mobile) -->
+    <!-- ================================================= -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    const sidebar = document.getElementById('sidebar');
+                    const overlay = document.getElementById('sidebarOverlay');
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            }
+        });
+    </script>
+
+</body>
+</html>

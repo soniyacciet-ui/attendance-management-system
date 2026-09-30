@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Calendar | Attendance System</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: #f0f4fa;
+            color: #0b1e33;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0;
+            width: 260px; height: 100vh;
+            background: #0b2b4a; color: white;
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .logo {
+            font-size: 1.3rem; font-weight: 700;
+            padding: 0.5rem 0.5rem 0.8rem;
+            display: flex; align-items: center; gap: 0.6rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 0.3rem;
+        }
+        .logo i { color: #7bb3ff; font-size: 1.5rem; }
+        .college-name {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.7rem;
+            padding: 0.5rem 0.5rem 1.2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .menu-title {
+            font-size: 0.6rem; text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.8rem 0.8rem 0.4rem;
+            color: rgba(255,255,255,0.3); font-weight: 600;
+        }
+        .menu a {
+            display: flex; align-items: center; gap: 0.8rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.1rem;
+            font-size: 0.9rem; font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .menu a i { width: 1.4rem; color: rgba(255,255,255,0.3); }
+        .menu a:hover { background: rgba(255,255,255,0.06); color: white; }
+        .menu a:hover i { color: #7bb3ff; }
+        .menu a.active { background: rgba(37,99,235,0.25); color: white; }
+        .menu a.active i { color: #7bb3ff; }
+
+        /* MAIN */
+        .main { margin-left: 260px; min-height: 100vh; }
+
+        .topbar {
+            height: 72px;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2.2rem;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            position: sticky; top: 0; z-index: 100;
+            flex-wrap: wrap; gap: 0.5rem;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 0.8rem; }
+        .topbar-left .page-icon {
+            width: 44px; height: 44px;
+            border-radius: 14px;
+            background: rgba(37,99,235,0.08);
+            display: flex; align-items: center; justify-content: center;
+            color: #2563eb; font-size: 1.4rem;
+        }
+        .topbar-left h1 {
+            font-size: 1.5rem; font-weight: 700;
+            color: #0b2b4a; margin: 0;
+            letter-spacing: -0.02em;
+        }
+        .topbar-left .subtitle {
+            font-size: 0.8rem; color: #6b7f99;
+            display: block; margin-top: 0.05rem;
+        }
+
+        .content { padding: 2rem 2.2rem 3rem; }
+
+        /* CONTROLS */
+        .controls-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem 1.8rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.03);
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .nav-btn {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            background: #f1f6fd;
+            color: #2563eb;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .nav-btn:hover {
+            background: #e3edfc;
+            transform: translateY(-2px);
+        }
+
+        .month-label {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            min-width: 180px;
+            text-align: center;
+            letter-spacing: -0.02em;
+        }
+
+        .student-select {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .student-select label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 600;
+            color: #6b7f99;
+        }
+        .student-select select {
+            padding: 0.6rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            background: #f8fafd;
+            color: #0b1e33;
+            outline: none;
+            cursor: pointer;
+            min-width: 200px;
+        }
+        .student-select select:focus {
+            border-color: #2563eb;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.06);
+        }
+
+        /* STUDENT INFO */
+        .student-info {
+            background: linear-gradient(135deg, #eff6ff, #f8fafd);
+            border: 1px solid #dbeafe;
+            border-radius: 20px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .student-info .avatar {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0b2b4a, #1a4b73);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .student-info .info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            margin-bottom: 0.15rem;
+        }
+        .student-info .info p {
+            font-size: 0.85rem;
+            color: #6b7f99;
+        }
+        .student-info .info p i {
+            opacity: 0.4;
+            font-size: 0.7rem;
+            margin-right: 0.3rem;
+        }
+
+        /* CALENDAR */
+        .calendar-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem 1.8rem 1.8rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.03);
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .calendar-header div {
+            text-align: center;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #6b7f99;
+            padding: 0.5rem 0;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            position: relative;
+            transition: all 0.2s ease;
+            border: 1.5px solid transparent;
+            cursor: default;
+            min-height: 60px;
+        }
+
+        .day-cell.empty {
+            background: transparent;
+            border: none;
+        }
+
+        .day-cell.no-data {
+            background: #f8fafd;
+            color: #cbd5e1;
+            border-color: #eef2f7;
+        }
+
+        .day-cell.present {
+            background: linear-gradient(135deg, #dcfce7, #ecfdf5);
+            color: #15803d;
+            border-color: #86efac;
+        }
+        .day-cell.present:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px -6px rgba(34,197,94,0.35);
+        }
+
+        .day-cell.absent {
+            background: linear-gradient(135deg, #fee2e2, #fef2f2);
+            color: #dc2626;
+            border-color: #fca5a5;
+        }
+        .day-cell.absent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px -6px rgba(220,38,38,0.35);
+        }
+
+        .day-cell.today {
+            border: 2px solid #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+        }
+
+        .day-cell .status-icon {
+            position: absolute;
+            bottom: 6px;
+            font-size: 0.6rem;
+            opacity: 0.7;
+        }
+
+        /* LEGEND */
+        .legend {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid #eef2f7;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #4a6a8a;
+            font-weight: 500;
+        }
+        .legend-box {
+            width: 20px; height: 20px;
+            border-radius: 6px;
+            border: 1.5px solid transparent;
+        }
+        .legend-box.present { background: #dcfce7; border-color: #86efac; }
+        .legend-box.absent { background: #fee2e2; border-color: #fca5a5; }
+        .legend-box.no-data { background: #f8fafd; border-color: #eef2f7; }
+        .legend-box.today { background: white; border: 2px solid #2563eb; }
+
+        /* SUMMARY */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .summary-stat {
+            background: white;
+            padding: 1.2rem 1.4rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .summary-stat .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 600;
+            color: #6b7f99;
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .summary-stat .label i { color: #2563eb; opacity: 0.4; }
+        .summary-stat .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            margin-top: 0.15rem;
+            letter-spacing: -0.02em;
+        }
+        .summary-stat .value.good { color: #16a34a; }
+        .summary-stat .value.warn { color: #dc2626; }
+        .summary-stat .value.info { color: #2563eb; }
+
+        /* INSIGHTS */
+        .insights-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem 1.8rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .insights-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .insights-card h3 i { color: #f59e0b; }
+        .insights-list { list-style: none; padding: 0; margin: 0; }
+        .insights-list li {
+            padding: 0.7rem 1rem 0.7rem 2.4rem;
+            margin-bottom: 0.5rem;
+            background: #f8fafd;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #1a3650;
+            position: relative;
+            border-left: 3px solid #2563eb;
+            line-height: 1.5;
+        }
+        .insights-list li::before {
+            content: "";
+            position: absolute;
+            left: 0.9rem; top: 0.95rem;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #2563eb;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: #6b7f99;
+        }
+        .empty-state .empty-icon {
+            width: 64px; height: 64px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: #2563eb;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+        }
+        .empty-state h3 {
+            color: #0b2b4a;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        /* MOBILE */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: #0b2b4a;
+            cursor: pointer;
+        }
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 999;
+        }
+        .sidebar-overlay.active { display: block; }
+
+        @media (max-width: 1000px) {
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .topbar { padding: 0 1.2rem; }
+            .content { padding: 1.2rem; }
+            .hamburger { display: flex !important; }
+            .sidebar-overlay.active { display: block; }
+            .controls-card { flex-direction: column; align-items: stretch; }
+            .month-nav { justify-content: space-between; }
+            .student-select { flex-direction: column; align-items: stretch; }
+            .student-select select { width: 100%; }
+            .summary-grid { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+            .summary-stat { padding: 1rem; }
+            .summary-stat .value { font-size: 1.4rem; }
+            .day-cell { min-height: 44px; font-size: 0.8rem; border-radius: 10px; }
+            .day-cell .status-icon { display: none; }
+        }
+        @media (max-width: 480px) {
+            .summary-grid { grid-template-columns: 1fr; }
+            .calendar-card { padding: 1rem; }
+            .calendar-grid { gap: 0.3rem; }
+            .calendar-header div { font-size: 0.6rem; }
+            .day-cell { min-height: 38px; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+    <div class="logo">
+        <i class="fas fa-clipboard-check"></i>
+        Attendance System
+    </div>
+    <div class="college-name">
+        <i class="fas fa-building-columns" style="margin-right:0.4rem;opacity:0.5;"></i>
+        {{ college.name }}
+    </div>
+
+    <div class="menu-title">Main Menu</div>
+    <div class="menu">
+        {% if profile.role == "ADMIN" %}
+            <a href="{% url 'admin_dashboard' %}">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </a>
+            <a href="{% url 'manage_departments' %}">
+                <i class="fas fa-building-columns"></i> Departments
+            </a>
+            <a href="{% url 'manage_students' %}">
+                <i class="fas fa-user-graduate"></i> Students
+            </a>
+        {% elif profile.role == "STAFF" %}
+            <a href="{% url 'staff_dashboard' %}">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </a>
+        {% elif profile.role == "HOD" %}
+            <a href="{% url 'hod_dashboard' %}">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </a>
+        {% elif profile.role == "STUDENT" %}
+            <a href="{% url 'student_dashboard' %}">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </a>
+        {% endif %}
+        <a href="{% url 'attendance_calendar' %}" class="active">
+            <i class="fas fa-calendar-days"></i> Calendar
+        </a>
+        {% if profile.role != "STUDENT" %}
+            <a href="{% url 'attendance_reports' %}">
+                <i class="fas fa-chart-bar"></i> Reports
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <button class="hamburger" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="page-icon">
+                <i class="fas fa-calendar-days"></i>
+            </div>
+            <div>
+                <h1>Attendance Calendar</h1>
+                <span class="subtitle">Monthly view of attendance records</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- CONTROLS -->
+        <div class="controls-card">
+
+            <div class="month-nav">
+                <a href="?year={{ prev_year }}&month={{ prev_month }}{% if student %}&student={{ student.id }}{% endif %}"
+                   class="nav-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                <div class="month-label">
+                    {{ month_name }} {{ year }}
+                </div>
+                <a href="?year={{ next_year }}&month={{ next_month }}{% if student %}&student={{ student.id }}{% endif %}"
+                   class="nav-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+
+            {% if profile.role != "STUDENT" %}
+            <form method="GET" class="student-select">
+                <input type="hidden" name="year" value="{{ year }}">
+                <input type="hidden" name="month" value="{{ month }}">
+                <label>Student:</label>
+                <select name="student" onchange="this.form.submit()">
+                    <option value="">— Select a student —</option>
+                    {% for s in students_list %}
+                        <option value="{{ s.id }}" {% if student and student.id == s.id %}selected{% endif %}>
+                            {{ s.register_number }} — {{ s.user.get_full_name|default:s.user.username }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+            {% endif %}
+
+        </div>
+
+        {% if student %}
+
+        <!-- STUDENT INFO -->
+        <div class="student-info">
+            <div class="avatar">
+                {{ student.user.get_full_name|default:student.user.username|first|upper }}
+            </div>
+            <div class="info">
+                <h3>{{ student.user.get_full_name|default:student.user.username }}</h3>
+                <p>
+                    <i class="fas fa-id-badge"></i>
+                    {{ student.register_number }}
+                    &nbsp;·&nbsp;
+                    <i class="fas fa-building-columns"></i>
+                    {{ student.department.name }}
+                    &nbsp;·&nbsp;
+                    <i class="fas fa-percent"></i>
+                    Required: {{ student.department.attendance_required }}%
+                </p>
+            </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="summary-grid">
+            <div class="summary-stat">
+                <div class="label"><i class="fas fa-list"></i> Total Days</div>
+                <div class="value">{{ total }}</div>
+            </div>
+            <div class="summary-stat">
+                <div class="label"><i class="fas fa-check-circle"></i> Present</div>
+                <div class="value good">{{ present }}</div>
+            </div>
+            <div class="summary-stat">
+                <div class="label"><i class="fas fa-times-circle"></i> Absent</div>
+                <div class="value warn">{{ absent }}</div>
+            </div>
+            <div class="summary-stat">
+                <div class="label"><i class="fas fa-percent"></i> Attendance</div>
+                <div class="value {% if percentage >= student.department.attendance_required %}good{% elif percentage > 0 %}warn{% else %}info{% endif %}">
+                    {{ percentage }}%
+                </div>
+            </div>
+        </div>
+
+        <!-- CALENDAR -->
+        <div class="calendar-card">
+
+            <div class="calendar-header">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+            </div>
+
+            <div class="calendar-grid">
+                {% for week in weeks %}
+                    {% for day in week %}
+                        {% if day.status == 'empty' %}
+                            <div class="day-cell empty"></div>
+                        {% elif day.status == 'PRESENT' %}
+                            <div class="day-cell present {% if day.is_today %}today{% endif %}">
+                                {{ day.day }}
+                                <i class="fas fa-check status-icon"></i>
+                            </div>
+                        {% elif day.status == 'ABSENT' %}
+                            <div class="day-cell absent {% if day.is_today %}today{% endif %}">
+                                {{ day.day }}
+                                <i class="fas fa-times status-icon"></i>
+                            </div>
+                        {% else %}
+                            <div class="day-cell no-data {% if day.is_today %}today{% endif %}">
+                                {{ day.day }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+
+            <!-- LEGEND -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-box present"></div>
+                    Present
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box absent"></div>
+                    Absent
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box no-data"></div>
+                    No Record
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box today"></div>
+                    Today
+                </div>
+            </div>
+
+        </div>
+
+        <!-- INSIGHTS -->
+        {% if calendar_insights %}
+        <div class="insights-card">
+            <h3><i class="fas fa-lightbulb"></i> Monthly Insights</h3>
+            <ul class="insights-list">
+                {% for insight in calendar_insights %}
+                    <li>{{ insight }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% else %}
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <h3>Select a Student</h3>
+            <p>Choose a student from the dropdown above to view their monthly attendance calendar.</p>
+        </div>
+
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+    }
+</script>
+
+</body>
+</html>

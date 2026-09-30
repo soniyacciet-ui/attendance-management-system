@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Staff | Attendance System</title>
+
+    <!-- Google Font & Font Awesome for modern icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: linear-gradient(145deg, #eef4fa 0%, #dce6f2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            color: #0b1e33;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* ----- main card ----- */
+        .card {
+            background: #ffffff;
+            padding: 2.8rem 2.4rem 2.8rem;
+            border-radius: 36px;
+            box-shadow: 
+                0 20px 40px -12px rgba(11, 43, 74, 0.20),
+                0 8px 24px -6px rgba(0, 20, 40, 0.06),
+                inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: transform 0.2s ease, box-shadow 0.25s ease;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 28px 48px -14px rgba(11, 43, 74, 0.25);
+        }
+
+        /* ----- warning icon ----- */
+        .icon-wrapper {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #fef2f2;
+            border: 1px solid rgba(220, 38, 38, 0.1);
+        }
+
+        .icon-wrapper i {
+            font-size: 2rem;
+            color: #dc2626;
+        }
+
+        /* ----- header ----- */
+        .card h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .card h1 i {
+            color: #dc2626;
+            font-size: 1.4rem;
+        }
+
+        .card > p {
+            color: #6b7f99;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            max-width: 380px;
+            margin: 0 auto 1.8rem;
+        }
+
+        /* ----- staff info card ----- */
+        .staff-info {
+            background: #f8fafd;
+            padding: 1.2rem 1.5rem;
+            border-radius: 20px;
+            margin: 0 0 2rem 0;
+            border: 1px solid #eef2f7;
+            text-align: left;
+        }
+
+        .staff-info .name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .staff-info .name i {
+            color: #2563eb;
+            font-size: 1rem;
+        }
+
+        .staff-info .details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem 1.2rem;
+            font-size: 0.85rem;
+            color: #4a6a8a;
+        }
+
+        .staff-info .details span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .staff-info .details i {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            width: 0.9rem;
+        }
+
+        .staff-info .divider {
+            display: inline-block;
+            width: 1px;
+            height: 1.2rem;
+            background: #dce6f2;
+            margin: 0 0.2rem;
+        }
+
+        /* ----- buttons ----- */
+        .buttons {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 0.2rem;
+        }
+
+        .buttons a,
+        .buttons button {
+            flex: 1;
+            padding: 0.8rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-cancel {
+            background: #f1f4f9;
+            color: #374151;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-cancel:hover {
+            background: #e5eaf0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-cancel i {
+            color: #6b7f99;
+        }
+
+        .btn-delete {
+            background: #dc2626;
+            color: white;
+            box-shadow: 0 8px 18px -6px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-delete:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -8px rgba(220, 38, 38, 0.35);
+        }
+
+        .btn-delete:active {
+            transform: scale(0.97);
+        }
+
+        .btn-delete i {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* ----- responsive ----- */
+        @media (max-width: 500px) {
+            .card {
+                padding: 2rem 1.5rem 2rem;
+                border-radius: 28px;
+            }
+            .card h1 {
+                font-size: 1.4rem;
+            }
+            .buttons {
+                flex-direction: column-reverse;
+            }
+            .buttons a,
+            .buttons button {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+            .staff-info {
+                padding: 1rem 1.2rem;
+            }
+            .staff-info .details {
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+            .staff-info .divider {
+                display: none;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .card {
+                padding: 1.5rem 1.2rem 1.8rem;
+            }
+            .icon-wrapper {
+                width: 60px;
+                height: 60px;
+            }
+            .icon-wrapper i {
+                font-size: 1.6rem;
+            }
+            .card h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <!-- Warning icon -->
+        <div class="icon-wrapper">
+            <i class="fas fa-triangle-exclamation"></i>
+        </div>
+
+        <h1>
+            <i class="fas fa-user-slash" style="color:#dc2626;font-size:1.2rem;"></i>
+            Delete Staff?
+        </h1>
+
+        <p>
+            Are you sure you want to remove this staff member?
+            This action cannot be undone.
+        </p>
+
+        <!-- Staff info (original data) -->
+        <div class="staff-info">
+            <div class="name">
+                <i class="fas fa-user-circle"></i>
+                {{ staff.user.first_name }}
+            </div>
+            <div class="details">
+                <span>
+                    <i class="fas fa-id-badge"></i>
+                    Staff ID: {{ staff.staff_id }}
+                </span>
+                <span class="divider"></span>
+                <span>
+                    <i class="fas fa-building-columns"></i>
+                    {{ staff.department.name }}
+                </span>
+            </div>
+        </div>
+
+        <!-- ===== FORM ===== (action, method, csrf unchanged) -->
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="buttons">
+                <a href="{% url 'department_details' staff.department.id %}" class="btn-cancel">
+                    <i class="fas fa-arrow-left"></i>
+                    Cancel
+                </a>
+                <button type="submit" class="btn-delete">
+                    <i class="fas fa-trash-can"></i>
+                    Delete Staff
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

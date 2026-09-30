@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD | {{ department.name }}</title>
+
+    <!-- Google Font & Font Awesome for modern icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: #f0f4fa;
+            color: #0b1e33;
+        }
+
+        /* ================= SIDEBAR ================= */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #0b2b4a;
+            color: white;
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            z-index: 1000;
+            border-right: 1px solid rgba(255, 255, 255, 0.04);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            padding: 0.5rem 0.5rem 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 0.3rem;
+        }
+
+        .logo i {
+            color: #7bb3ff;
+            font-size: 1.5rem;
+        }
+
+        .college {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.7rem;
+            padding: 0.5rem 0.5rem 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .menu-title {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.8rem 0.8rem 0.4rem;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .menu a i {
+            width: 1.4rem;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.3);
+            transition: color 0.2s ease;
+        }
+
+        .menu a:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+        }
+
+        .menu a:hover i {
+            color: #7bb3ff;
+        }
+
+        .menu .active {
+            background: rgba(37, 99, 235, 0.25);
+            color: white;
+        }
+
+        .menu .active i {
+            color: #7bb3ff;
+        }
+
+        /* ================= MAIN ================= */
+        .main {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* ================= TOP BAR ================= */
+        .topbar {
+            height: 72px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2.2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .topbar-left .dept-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: rgba(37, 99, 235, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 1.4rem;
+        }
+
+        .topbar-left h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .topbar-left .subtitle {
+            font-size: 0.8rem;
+            color: #6b7f99;
+            display: block;
+            margin-top: 0.05rem;
+        }
+
+        .topbar-left .subtitle i {
+            margin: 0 0.2rem;
+            font-size: 0.4rem;
+            opacity: 0.4;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            background: white;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: #f8fafd;
+            border-color: #cbd5e1;
+            transform: translateX(-2px);
+        }
+
+        .back-btn i {
+            font-size: 0.8rem;
+        }
+
+        /* ================= CONTENT ================= */
+        .content {
+            padding: 2rem 2.2rem 3rem;
+        }
+
+        /* ================= CARD ================= */
+        .card {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            border-radius: 24px;
+            padding: 1.8rem 2rem 2.2rem;
+            max-width: 800px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            transition: all 0.25s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 12px 28px -8px rgba(11, 43, 74, 0.08);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .card-header h2 i {
+            color: #2563eb;
+            opacity: 0.6;
+        }
+
+        /* ================= HOD PROFILE ================= */
+        .hod-profile {
+            display: flex;
+            align-items: center;
+            gap: 1.8rem;
+            padding: 1.8rem 2rem;
+            background: #eff6ff;
+            border-radius: 20px;
+            border: 1px solid rgba(37, 99, 235, 0.06);
+        }
+
+        .avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0b2b4a, #1a4b73);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            box-shadow: 0 6px 16px rgba(11, 43, 74, 0.15);
+        }
+
+        .hod-info h3 {
+            margin: 0 0 0.3rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0b2b4a;
+        }
+
+        .hod-info p {
+            margin: 0.2rem 0;
+            color: #4a6a8a;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .hod-info p i {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            width: 1.1rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: #dcfce7;
+            color: #15803d;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 0.3rem;
+        }
+
+        .badge i {
+            font-size: 0.6rem;
+        }
+
+        /* ================= EMPTY STATE ================= */
+        .empty {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: #6b7f99;
+        }
+
+        .empty-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .empty h3 {
+            color: #0b2b4a;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        .empty p {
+            font-size: 0.95rem;
+            color: #6b7f99;
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar {
+                padding: 0 1.2rem;
+                height: auto;
+                min-height: 64px;
+            }
+
+            .content {
+                padding: 1.2rem;
+            }
+
+            .card {
+                padding: 1.2rem;
+            }
+
+            .hod-profile {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+                gap: 1rem;
+            }
+
+            .hod-info p {
+                justify-content: center;
+            }
+
+            .hamburger {
+                display: flex !important;
+            }
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: #0b2b4a;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+
+        .change-hod-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 10px 18px;
+            background: #0b2b4a;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .change-hod-btn:hover {
+            background: #1a3f62;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR OVERLAY (mobile) -->
+    <!-- ================================================= -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR -->
+    <!-- ================================================= -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-clipboard-check"></i>
+            Attendance System
+        </div>
+        <div class="college">
+            <i class="fas fa-building-columns" style="margin-right:0.4rem;opacity:0.5;"></i>
+            {{ college.name }}
+        </div>
+
+        <div class="menu-title">Main Menu</div>
+        <div class="menu">
+            <a href="{% url 'admin_dashboard' %}">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </a>
+            <a href="{% url 'manage_departments' %}">
+                <i class="fas fa-building-columns"></i> Departments
+            </a>
+            <a href="{% url 'manage_students' %}">
+                <i class="fas fa-user-graduate"></i> Students
+            </a>
+            <a href="#">
+                <i class="fas fa-chalkboard-user"></i> Staff
+            </a>
+            <a href="#" class="active">
+                <i class="fas fa-user-tie"></i> HODs
+            </a>
+            <a href="#">
+                <i class="fas fa-clipboard-list"></i> Attendance
+            </a>
+        </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- MAIN CONTENT -->
+    <!-- ================================================= -->
+    <div class="main">
+
+        <!-- TOP BAR -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="dept-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div>
+                    <h1>Head of Department</h1>
+                    <span class="subtitle">
+                        {{ department.name }}
+                        <i class="fas fa-circle"></i>
+                        {{ college.name }}
+                    </span>
+                </div>
+            </div>
+            <a href="{% url 'manage_departments' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Departments
+            </a>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- HOD CARD -->
+            <div class="card">
+
+                <div class="card-header">
+                    <h2>
+                        <i class="fas fa-user-tie"></i>
+                        Department HOD
+                    </h2>
+                </div>
+
+                {% if hod %}
+
+                <div class="hod-profile">
+
+                    <div class="hod-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+
+                    <div class="hod-info">
+
+                        <h3>
+                            {{ hod.user.get_full_name|default:hod.user.username }}
+                        </h3>
+
+                        <p>
+                            <strong>HOD ID:</strong>
+                            {{ hod.user.username }}
+                        </p>
+
+                        <p>
+                            <strong>Department:</strong>
+                            {{ department.name }}
+                        </p>
+
+                        <a href="{% url 'change_hod' department.id %}" class="change-hod-btn">
+
+                            <i class="fas fa-user-edit"></i>
+                            Change HOD
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                <div class="empty">
+
+                    <div class="empty-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+
+                    <h3>No HOD Assigned</h3>
+
+                    <p>
+                        There is currently no HOD assigned to
+                        {{ department.name }}.
+                    </p>
+
+                    <a href="{% url 'add_hod' department.id %}" class="add-hod-btn">
+
+                        <i class="fas fa-user-tie"></i>
+                        Add HOD
+
+                    </a>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR TOGGLE SCRIPT (mobile) -->
+    <!-- ================================================= -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        // Close sidebar on link click (mobile)
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            link.addEventListener('click', function () {
+                if (window.innerWidth <= 768) {
+                    const sidebar = document.getElementById('sidebar');
+                    const overlay = document.getElementById('sidebarOverlay');
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Close on escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

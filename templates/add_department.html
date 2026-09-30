@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Department · refined</title>
+  <!-- Google Font & Font Awesome for clean icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      background: linear-gradient(145deg, #f0f5fe 0%, #e8eff9 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      margin: 0;
+    }
+
+    /* modern card with subtle depth */
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(2px);
+      background: #ffffff;
+      padding: 2.2rem 2rem 2.5rem;
+      border-radius: 32px;
+      box-shadow: 
+        0 20px 40px -12px rgba(0, 20, 50, 0.25),
+        0 8px 24px -6px rgba(0, 20, 40, 0.08),
+        inset 0 1px 1px rgba(255, 255, 255, 0.6);
+      transition: transform 0.2s ease, box-shadow 0.25s ease;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 28px 48px -14px rgba(18, 52, 106, 0.3);
+    }
+
+    /* header with icon */
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .card-header i {
+      font-size: 2rem;
+      color: #2563eb;
+      background: rgba(37, 99, 235, 0.08);
+      padding: 0.6rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.05);
+    }
+
+    .card-header h2 {
+      font-weight: 600;
+      font-size: 1.7rem;
+      letter-spacing: -0.02em;
+      color: #0a1e3c;
+      margin: 0;
+      background: linear-gradient(135deg, #0a1e3c 0%, #1e3a6b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* form elements */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .input-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      color: #1e2f4a;
+      margin-bottom: 0.4rem;
+    }
+
+    .input-group label i {
+      font-size: 1rem;
+      color: #2563eb;
+      opacity: 0.8;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 16px;
+      color: #94a3b8;
+      font-size: 1rem;
+      pointer-events: none;
+      transition: color 0.2s ease;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.9rem 1rem 0.9rem 3rem;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      background: #f8fafd;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 18px;
+      transition: all 0.2s ease;
+      color: #0a1e3c;
+      font-weight: 450;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #2563eb;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12), inset 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    input::placeholder {
+      color: #9aaec9;
+      font-weight: 400;
+      font-size: 0.95rem;
+      opacity: 0.7;
+    }
+
+    /* button with modern flair */
+    .btn-submit {
+      width: 100%;
+      padding: 0.95rem 1.2rem;
+      margin-top: 0.8rem;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 40px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 10px 18px -8px rgba(37, 99, 235, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-submit i {
+      font-size: 1.1rem;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-submit:hover {
+      background: #1d4ed8;
+      transform: scale(1.01) translateY(-1px);
+      box-shadow: 0 16px 28px -10px rgba(37, 99, 235, 0.5);
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+      box-shadow: 0 6px 12px -6px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-submit:hover i {
+      transform: translateX(4px);
+    }
+
+    /* subtle extra detail */
+    .form-footnote {
+      margin-top: 1.8rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #7c8faa;
+      border-top: 1px solid rgba(0,0,0,0.03);
+      padding-top: 1.2rem;
+      letter-spacing: 0.01em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .form-footnote i {
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+
+    /* responsive touches */
+    @media (max-width: 480px) {
+      .card {
+        padding: 1.8rem 1.5rem;
+        border-radius: 28px;
+      }
+      .card-header h2 {
+        font-size: 1.5rem;
+      }
+      input {
+        padding: 0.8rem 1rem 0.8rem 2.8rem;
+        font-size: 0.95rem;
+      }
+      .btn-submit {
+        padding: 0.85rem 1rem;
+        font-size: 1rem;
+      }
+    }
+
+    /* django hidden csrf will be rendered, no logic changes */
+    .csrf-hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <!-- header with icon and gradient text -->
+  <div class="card-header">
+    <i class="fas fa-building-columns" aria-hidden="true"></i>
+    <h2>Add Department</h2>
+  </div>
+
+  <form method="POST">
+    <!-- CSRF token: exactly as original, hidden input will be rendered by django -->
+    {% csrf_token %}
+
+    <div class="input-group">
+      <label for="deptName">
+        <i class="fas fa-tag" aria-hidden="true"></i> 
+        Department Name
+      </label>
+      <div class="input-wrapper">
+        <i class="fas fa-sitemap" aria-hidden="true"></i>
+        <input 
+          type="text" 
+          id="deptName"
+          name="name" 
+          placeholder="Example: AI &amp; Data Science" 
+          required
+          autofocus
+        >
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit">
+      <span>Add Department</span>
+      <i class="fas fa-arrow-right" aria-hidden="true"></i>
+    </button>
+  </form>
+
+  <!-- subtle footer (purely decorative) -->
+  <div class="form-footnote">
+    <i class="fas fa-circle-check" aria-hidden="true"></i> 
+    <span>new department will be created</span>
+    <i class="fas fa-circle" style="font-size: 0.3rem; opacity: 0.3; margin: 0 0.2rem;"></i>
+    <i class="fas fa-lock" style="opacity: 0.3; font-size: 0.7rem;"></i>
+  </div>
+
+</div>
+</body>
+</html>

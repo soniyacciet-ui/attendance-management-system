@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portal | {{ student.user.get_full_name|default:student.user.username }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4fa;
+            padding: 2rem 1.5rem;
+            color: #0b1e33;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            color: #0b2b4a;
+        }
+
+        .header .subtitle {
+            font-size: 0.85rem;
+            color: #6b7f99;
+            margin-top: 0.2rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: #0b2b4a;
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #0b2b4a;
+            border: 1.5px solid #e2e8f0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.3rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-card .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #6b7f99;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stat-card .value.good {
+            color: #16a34a;
+        }
+
+        .stat-card .value.warn {
+            color: #dc2626;
+        }
+
+        .stat-card.eligibility-eligible {
+            border-left: 4px solid #22c55e;
+        }
+
+        .stat-card.eligibility-not-eligible {
+            border-left: 4px solid #dc2626;
+        }
+
+        .stat-card.eligibility-no-data {
+            border-left: 4px solid #94a3b8;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+
+        .card h2 {
+            font-size: 1.05rem;
+            color: #0b2b4a;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card h2 i {
+            color: #2563eb;
+            opacity: 0.6;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #f0f4fa;
+            font-size: 0.88rem;
+        }
+
+        th {
+            color: #4a6a8a;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .pct-badge {
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .pct-badge.good {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .pct-badge.warn {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .dispute-btn {
+            background: #fef3c7;
+            color: #b45309;
+            padding: 0.35rem 0.9rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dispute-btn:hover {
+            background: #fde68a;
+        }
+
+        .dispute-status {
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .dispute-status.pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .dispute-status.approved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .dispute-status.rejected {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .subject-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #f0f4fa;
+        }
+
+        .subject-row:last-child {
+            border-bottom: none;
+        }
+
+        .card.elig-eligible {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+        }
+
+        .card.elig-not-eligible {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+        }
+
+        .card.elig-no-data {
+            background: #f8fafd;
+            border-left: 4px solid #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .subject-row {
+                grid-template-columns: 1fr;
+                gap: 0.3rem;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <div>
+                <h1>
+                    <i class="fas fa-user-graduate" style="color:#2563eb;"></i>
+                    My Attendance Portal
+                </h1>
+                <div class="subtitle">
+                    {{ student.user.get_full_name|default:student.user.username }}
+                    · {{ student.register_number }}
+                    · {{ student.department.name }}
+                </div>
+            </div>
+            <a href="{% url 'logout' %}" class="btn btn-outline">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+
+        {% if messages %}
+        {% for m in messages %}
+        <div style="background:#dcfce7;color:#15803d;padding:0.9rem 1.2rem;border-radius:12px;margin-bottom:1rem;">
+            {{ m }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="label">Total Classes</div>
+                <div class="value">{{ total }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Present</div>
+                <div class="value good">{{ present }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Absent</div>
+                <div class="value warn">{{ absent }}</div>
+            </div>
+            <div class="stat-card
+            {% if eligibility == 'ELIGIBLE' %}eligibility-eligible
+            {% elif eligibility == 'NOT ELIGIBLE' %}eligibility-not-eligible
+            {% else %}eligibility-no-data{% endif %}">
+                <div class="label">Attendance %</div>
+                <div class="value {% if eligibility == 'ELIGIBLE' %}good{% else %}warn{% endif %}">{{ percentage }}%
+                </div>
+            </div>
+        </div>
+
+        <div class="card
+    {% if eligibility == 'ELIGIBLE' %}elig-eligible
+    {% elif eligibility == 'NOT ELIGIBLE' %}elig-not-eligible
+    {% else %}elig-no-data{% endif %}">
+            <h2 style="margin:0;">
+                {% if eligibility == "ELIGIBLE" %}
+                <i class="fas fa-circle-check" style="color:#22c55e;"></i>
+                You are Eligible — Attendance {{ percentage }}% ≥ {{ required }}%
+                {% elif eligibility == "NOT ELIGIBLE" %}
+                <i class="fas fa-triangle-exclamation" style="color:#dc2626;"></i>
+                Not Eligible — Need {{ required }}%, currently at {{ percentage }}%
+                {% else %}
+                <i class="fas fa-info-circle" style="color:#94a3b8;"></i>
+                No attendance data yet
+                {% endif %}
+            </h2>
+        </div>
+
+        {% if subjects_data %}
+        <div class="card">
+            <h2><i class="fas fa-book"></i> Subject-wise Breakdown</h2>
+            <div class="subject-row" style="font-weight:600;color:#4a6a8a;font-size:0.7rem;text-transform:uppercase;">
+                <div>Subject</div>
+                <div>Total</div>
+                <div>Present</div>
+                <div>Absent</div>
+                <div>%</div>
+            </div>
+            {% for s in subjects_data %}
+            <div class="subject-row">
+                <div><strong>{{ s.subject.name }}</strong></div>
+                <div>{{ s.total }}</div>
+                <div style="color:#16a34a;">{{ s.present }}</div>
+                <div style="color:#dc2626;">{{ s.absent }}</div>
+                <div>
+                    <span class="pct-badge {{ s.status }}">{{ s.percentage }}%</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <h2><i class="fas fa-exclamation-circle"></i> Recent Absences — Raise a Request</h2>
+            <p style="color:#6b7f99;font-size:0.85rem;margin-bottom:1rem;">
+                Were you actually present when marked absent? Click "I Was Present" to submit a correction request.
+            </p>
+
+            {% if recent_absences %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Period</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in recent_absences %}
+                    <tr>
+                        <td>{{ a.date|date:"d M Y" }}</td>
+                        <td>{{ a.subject.name|default:"—" }}</td>
+                        <td>{% if a.period %}P{{ a.period.number }}{% else %}—{% endif %}</td>
+                        <td>
+                            {% if a.id in disputed_ids %}
+                            <span class="dispute-status pending">
+                                <i class="fas fa-clock"></i> Request Sent
+                            </span>
+                            {% else %}
+                            <a href="{% url 'raise_dispute' a.id %}" class="dispute-btn">
+                                <i class="fas fa-hand-paper"></i> I Was Present
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="text-align:center;color:#94a3b8;padding:1.5rem;">
+                <i class="fas fa-check-circle"
+                    style="font-size:2rem;opacity:0.3;display:block;margin-bottom:0.5rem;"></i>
+                No absences — great job!
+            </p>
+            {% endif %}
+        </div>
+
+        {% if disputes %}
+        <div class="card">
+            <h2><i class="fas fa-list-check"></i> My Requests</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Reviewer Note</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in disputes %}
+                    <tr>
+                        <td>{{ d.attendance.date|date:"d M Y" }}</td>
+                        <td>{{ d.attendance.subject.name|default:"—" }}</td>
+                        <td>
+                            <span class="dispute-status {{ d.status|lower }}">
+                                {{ d.get_status_display }}
+                            </span>
+                        </td>
+                        <td style="font-size:0.8rem;color:#6b7f99;">
+                            {{ d.review_note|default:"—" }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+    </div>
+</body>
+
+</html>

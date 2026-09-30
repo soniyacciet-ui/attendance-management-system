@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departments | Attendance Management</title>
+
+    <!-- Google Font & Font Awesome for modern icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: #f0f4fa;
+            color: #0b1e33;
+        }
+
+        /* ================= SIDEBAR ================= */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #0b2b4a;
+            color: white;
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+            z-index: 1000;
+            border-right: 1px solid rgba(255, 255, 255, 0.04);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            padding: 0.5rem 0.5rem 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 0.3rem;
+        }
+
+        .logo i {
+            color: #7bb3ff;
+            font-size: 1.5rem;
+        }
+
+        .college-name {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.7rem;
+            padding: 0.5rem 0.5rem 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .menu-title {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.8rem 0.8rem 0.4rem;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .menu a i {
+            width: 1.4rem;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.3);
+            transition: color 0.2s ease;
+        }
+
+        .menu a:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+        }
+
+        .menu a:hover i {
+            color: #7bb3ff;
+        }
+
+        .menu a.active {
+            background: rgba(37, 99, 235, 0.25);
+            color: white;
+        }
+
+        .menu a.active i {
+            color: #7bb3ff;
+        }
+
+        /* ================= MAIN ================= */
+        .main {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* ================= TOP BAR ================= */
+        .topbar {
+            height: 72px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2.2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .topbar-left .page-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: rgba(37, 99, 235, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+            font-size: 1.4rem;
+        }
+
+        .topbar-left h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .topbar-left .subtitle {
+            font-size: 0.8rem;
+            color: #6b7f99;
+            display: block;
+            margin-top: 0.05rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            background: white;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: #f8fafd;
+            border-color: #cbd5e1;
+            transform: translateX(-2px);
+        }
+
+        .back-btn i {
+            font-size: 0.8rem;
+        }
+
+        /* ================= CONTENT ================= */
+        .content {
+            padding: 2rem 2.2rem 3rem;
+        }
+
+        /* ================= SUMMARY ================= */
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 1.2rem 1.5rem 1.2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            transition: all 0.25s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -8px rgba(11, 43, 74, 0.08);
+        }
+
+        .summary-card .label {
+            color: #6b7f99;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .summary-card .label i {
+            color: #2563eb;
+            opacity: 0.5;
+            font-size: 0.8rem;
+        }
+
+        .summary-card .value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            margin-top: 0.2rem;
+            letter-spacing: -0.02em;
+        }
+
+        /* ================= SECTION HEADER ================= */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .section-header h2 i {
+            color: #2563eb;
+            opacity: 0.4;
+            font-size: 1rem;
+        }
+
+        .add-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            background: #0b2b4a;
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(11, 43, 74, 0.15);
+        }
+
+        .add-btn:hover {
+            background: #1a3f62;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(11, 43, 74, 0.25);
+        }
+
+        .add-btn i {
+            font-size: 0.85rem;
+        }
+
+        /* ================= DEPARTMENT GRID ================= */
+        .department-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* ================= DEPARTMENT CARD ================= */
+        .department-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            padding: 1.5rem 1.5rem 1.8rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            transition: all 0.25s ease;
+        }
+
+        .department-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px -8px rgba(11, 43, 74, 0.08);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .department-icon {
+            width: 48px;
+            height: 48px;
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .department-status {
+            font-size: 0.65rem;
+            background: #dcfce7;
+            color: #15803d;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .department-status i {
+            font-size: 0.4rem;
+        }
+
+        .department-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            margin-bottom: 0.1rem;
+        }
+
+        .department-card .college {
+            font-size: 0.8rem;
+            color: #6b7f99;
+            margin-bottom: 1.2rem;
+        }
+
+        .counts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .count-box {
+            background: #f8fafd;
+            border-radius: 12px;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #f0f4fa;
+        }
+
+        .count-box span {
+            display: block;
+            color: #6b7f99;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 500;
+        }
+
+        .count-box strong {
+            font-size: 1.2rem;
+            color: #0b2b4a;
+            font-weight: 700;
+        }
+
+        .view-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.6rem 1rem;
+            background: #0b2b4a;
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .view-btn i {
+            font-size: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+
+        .view-btn:hover {
+            background: #1a3f62;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px -6px rgba(11, 43, 74, 0.25);
+        }
+
+        .view-btn:hover i {
+            transform: translateX(4px);
+        }
+
+        /* ================= EMPTY STATE ================= */
+        .empty {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            border-radius: 24px;
+            padding: 4rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .empty h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            margin-bottom: 0.3rem;
+        }
+
+        .empty p {
+            color: #6b7f99;
+            font-size: 0.95rem;
+        }
+
+        /* ================= MOBILE ================= */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: #0b2b4a;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 999;
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        @media (max-width: 900px) {
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main {
+                margin-left: 0;
+            }
+            .topbar {
+                padding: 0 1.2rem;
+                height: auto;
+                min-height: 64px;
+            }
+            .content {
+                padding: 1.2rem;
+            }
+            .summary {
+                grid-template-columns: 1fr;
+            }
+            .department-grid {
+                grid-template-columns: 1fr;
+            }
+            .hamburger {
+                display: flex !important;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .add-btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR OVERLAY (mobile) -->
+    <!-- ================================================= -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR -->
+    <!-- ================================================= -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-clipboard-check"></i>
+            Attendance System
+        </div>
+        <div class="college-name">
+            <i class="fas fa-building-columns" style="margin-right:0.4rem;opacity:0.5;"></i>
+            {{ college.name }}
+        </div>
+
+        <div class="menu-title">Main Menu</div>
+        <div class="menu">
+            <a href="{% url 'admin_dashboard' %}">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </a>
+            <a href="{% url 'manage_departments' %}" class="active">
+                <i class="fas fa-building-columns"></i> Departments
+            </a>
+            <a href="{% url 'manage_students' %}">
+                <i class="fas fa-user-graduate"></i> Students
+            </a>
+            <a href="#">
+                <i class="fas fa-chalkboard-user"></i> Staff
+            </a>
+            <a href="#">
+                <i class="fas fa-user-tie"></i> HODs
+            </a>
+            <a href="#">
+                <i class="fas fa-clipboard-list"></i> Attendance
+            </a>
+        </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- MAIN -->
+    <!-- ================================================= -->
+    <div class="main">
+
+        <!-- TOP BAR -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="page-icon">
+                    <i class="fas fa-building-columns"></i>
+                </div>
+                <div>
+                    <h1>Departments</h1>
+                    <span class="subtitle">
+                        Manage departments and their members
+                    </span>
+                </div>
+            </div>
+            <a href="{% url 'admin_dashboard' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Dashboard
+            </a>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- ================================================= -->
+            <!-- SUMMARY -->
+            <!-- ================================================= -->
+            <div class="summary">
+
+                <div class="summary-card">
+                    <div class="label">
+                        <i class="fas fa-building-columns"></i> College
+                    </div>
+                    <div class="value" style="font-size:1.1rem;">
+                        {{ college.name }}
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="label">
+                        <i class="fas fa-layer-group"></i> Total Departments
+                    </div>
+                    <div class="value">
+                        {{ departments|length }}
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="label">
+                        <i class="fas fa-percent"></i> Attendance Requirement
+                    </div>
+                    <div class="value">
+                        {{ college.attendance_percentage }}%
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================================================= -->
+            <!-- DEPARTMENT SECTION -->
+            <!-- ================================================= -->
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-layer-group"></i>
+                    Your Departments
+                </h2>
+                <a href="{% url 'add_department' %}" class="add-btn">
+                    <i class="fas fa-plus"></i>
+                    Add Department
+                </a>
+            </div>
+
+            {% if departments %}
+
+                <div class="department-grid">
+
+                    {% for department in departments %}
+
+                        <div class="department-card">
+
+                            <div class="card-top">
+                                <div class="department-icon">
+                                    {{ department.name|first|upper }}
+                                </div>
+                                <span class="department-status">
+                                    <i class="fas fa-circle"></i>
+                                    ACTIVE
+                                </span>
+                            </div>
+
+                            <h3>{{ department.name }}</h3>
+                            <p class="college">
+                                <i class="fas fa-building-columns" style="opacity:0.3;font-size:0.7rem;margin-right:0.3rem;"></i>
+                                {{ college.name }}
+                            </p>
+
+                            <div class="counts">
+                                <div class="count-box">
+                                    <span>
+                                        <i class="fas fa-user-graduate" style="opacity:0.4;font-size:0.6rem;"></i> Students
+                                    </span>
+                                    <strong>{{ department.students.count }}</strong>
+                                </div>
+                                <div class="count-box">
+                                    <span>
+                                        <i class="fas fa-chalkboard-user" style="opacity:0.4;font-size:0.6rem;"></i> Staff
+                                    </span>
+                                    <strong>{{ department.staff.count }}</strong>
+                                </div>
+                            </div>
+
+                            <a href="{% url 'department_details' department.id %}" class="view-btn">
+                                View Department
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <!-- ================================================= -->
+                <!-- NO DEPARTMENTS -->
+                <!-- ================================================= -->
+                <div class="empty">
+                    <div class="empty-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <h3>No Departments Yet</h3>
+                    <p>
+                        No departments have been created for this college.
+                    </p>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR TOGGLE SCRIPT (mobile) -->
+    <!-- ================================================= -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        // Close sidebar on link click (mobile)
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    const sidebar = document.getElementById('sidebar');
+                    const overlay = document.getElementById('sidebarOverlay');
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Close on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Log | {{ college.name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f0f4fa; padding: 2rem 1.5rem; color: #0b1e33; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: white; padding: 1.5rem 2rem; border-radius: 20px; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .header h1 { font-size: 1.5rem; color: #0b2b4a; display: flex; align-items: center; gap: 0.6rem; }
+        .header h1 i { color: #2563eb; }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.2rem; background: #0b2b4a; color: white; text-decoration: none; border-radius: 40px; font-size: 0.85rem; font-weight: 500; border: none; cursor: pointer; }
+        .btn-outline { background: transparent; color: #0b2b4a; border: 1.5px solid #e2e8f0; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: white; padding: 1.3rem; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-left: 4px solid #2563eb; }
+        .stat-card.updated { border-left-color: #f59e0b; }
+        .stat-card.created { border-left-color: #22c55e; }
+        .stat-card .label { font-size: 0.7rem; text-transform: uppercase; color: #6b7f99; font-weight: 600; margin-bottom: 0.3rem; }
+        .stat-card .value { font-size: 1.8rem; font-weight: 700; color: #0b2b4a; }
+        .filter-card { background: white; padding: 1.2rem 1.8rem; border-radius: 16px; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.04); display: flex; gap: 1rem; flex-wrap: wrap; align-items: end; }
+        .filter-group { flex: 1; min-width: 150px; }
+        .filter-group label { display: block; font-size: 0.7rem; text-transform: uppercase; color: #6b7f99; font-weight: 600; margin-bottom: 0.4rem; }
+        .filter-group select, .filter-group input { width: 100%; padding: 0.6rem; border: 1.5px solid #e2e8f0; border-radius: 10px; font-family: inherit; font-size: 0.9rem; background: #f8fafd; }
+        .table-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.04); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.9rem 1rem; text-align: left; border-bottom: 1px solid #f0f4fa; font-size: 0.85rem; }
+        th { background: #f8fafd; color: #4a6a8a; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        td { color: #2d4a6a; }
+        .badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.7rem; border-radius: 40px; font-size: 0.7rem; font-weight: 600; }
+        .badge.created { background: #dcfce7; color: #15803d; }
+        .badge.updated { background: #fffbeb; color: #b45309; }
+        .status-change { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; }
+        .status-old { color: #94a3b8; text-decoration: line-through; }
+        .status-new { color: #16a34a; font-weight: 600; }
+        .empty { text-align: center; padding: 3rem; color: #94a3b8; }
+        @media (max-width: 768px) { .stats { grid-template-columns: 1fr; } th, td { padding: 0.6rem 0.5rem; font-size: 0.78rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <h1><i class="fas fa-history"></i> Attendance Audit Log</h1>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="label">Total Changes</div>
+            <div class="value">{{ total_changes }}</div>
+        </div>
+        <div class="stat-card updated">
+            <div class="label">Updated</div>
+            <div class="value">{{ updated_count }}</div>
+        </div>
+        <div class="stat-card created">
+            <div class="label">Created</div>
+            <div class="value">{{ created_count }}</div>
+        </div>
+    </div>
+
+    <form method="GET" class="filter-card">
+        <div class="filter-group">
+            <label>Last</label>
+            <select name="days">
+                <option value="1" {% if days_filter == 1 %}selected{% endif %}>24 hours</option>
+                <option value="7" {% if days_filter == 7 %}selected{% endif %}>7 days</option>
+                <option value="30" {% if days_filter == 30 %}selected{% endif %}>30 days</option>
+                <option value="90" {% if days_filter == 90 %}selected{% endif %}>90 days</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Action</label>
+            <select name="action">
+                <option value="">All</option>
+                <option value="CREATED" {% if action_filter == 'CREATED' %}selected{% endif %}>Created</option>
+                <option value="UPDATED" {% if action_filter == 'UPDATED' %}selected{% endif %}>Updated</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Student</label>
+            <select name="student">
+                <option value="">All</option>
+                {% for s in students_list %}
+                    <option value="{{ s.id }}" {% if student_filter == s.id|stringformat:"s" %}selected{% endif %}>
+                        {{ s.register_number }} - {{ s.user.get_full_name|default:s.user.username }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn"><i class="fas fa-filter"></i> Apply</button>
+    </form>
+
+    <div class="table-card">
+        {% if logs %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Action</th>
+                    <th>Student</th>
+                    <th>Change</th>
+                    <th>By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>
+                        <div style="font-size:0.8rem;">{{ log.created_at|date:"d M Y" }}</div>
+                        <div style="font-size:0.7rem;color:#94a3b8;">{{ log.created_at|time:"H:i" }}</div>
+                    </td>
+                    <td>
+                        <span class="badge {{ log.action|lower }}">
+                            {% if log.action == "CREATED" %}<i class="fas fa-plus"></i>{% else %}<i class="fas fa-pen"></i>{% endif %}
+                            {{ log.get_action_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <strong>{{ log.student.register_number }}</strong><br>
+                        <small style="color:#6b7f99;">{{ log.student.user.get_full_name|default:log.student.user.username }}</small>
+                    </td>
+                    <td>
+                        {% if log.action == "UPDATED" %}
+                            <div class="status-change">
+                                <span class="status-old">{{ log.old_status }}</span>
+                                <i class="fas fa-arrow-right" style="color:#94a3b8;font-size:0.7rem;"></i>
+                                <span class="status-new">{{ log.new_status }}</span>
+                            </div>
+                        {% else %}
+                            <span class="status-new">{{ log.new_status }}</span>
+                        {% endif %}
+                        {% if log.subject_name %}
+                            <div style="font-size:0.7rem;color:#94a3b8;margin-top:0.2rem;">
+                                {{ log.subject_name }}{% if log.period_number %} · Period {{ log.period_number }}{% endif %}
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.changed_by %}
+                            <strong>{{ log.changed_by.username }}</strong>
+                        {% else %}
+                            <span style="color:#94a3b8;">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">
+            <i class="fas fa-history" style="font-size:2.5rem;opacity:0.3;display:block;margin-bottom:1rem;"></i>
+            <h3 style="color:#0b2b4a;">No audit logs found</h3>
+            <p>No attendance changes in this period.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+</body>
+</html>

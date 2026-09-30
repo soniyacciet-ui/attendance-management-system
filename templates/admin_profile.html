@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f0f4fa; padding: 2rem 1.5rem; color: #0b1e33; }
+        .container { max-width: 640px; margin: 0 auto; }
+        .card { background: white; border-radius: 24px; padding: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.04); }
+        .profile-header { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 2rem; }
+        .avatar {
+            width: 72px; height: 72px; border-radius: 50%;
+            background: linear-gradient(135deg, #0b2b4a, #1a4b73);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; font-weight: 600;
+        }
+        .profile-header h1 { font-size: 1.4rem; color: #0b2b4a; }
+        .profile-header p { color: #6b7f99; font-size: 0.9rem; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #6b7f99; margin-bottom: 0.4rem; }
+        input { width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #e2e8f0; border-radius: 12px; font-family: inherit; font-size: 0.95rem; background: #f8fafd; outline: none; }
+        input:focus { border-color: #2563eb; background: white; }
+        .btn {
+            width: 100%; padding: 0.9rem; background: #0b2b4a; color: white;
+            border: none; border-radius: 40px; font-weight: 600; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .btn:hover { background: #1a3f62; }
+        .alert { background: #dcfce7; color: #15803d; padding: 0.9rem 1.2rem; border-radius: 12px; margin-bottom: 1rem; }
+        .back { display: inline-flex; align-items: center; gap: 0.4rem; color: #2563eb; text-decoration: none; font-size: 0.9rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="{% url 'admin_dashboard' %}" class="back"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    <div class="card">
+        <div class="profile-header">
+            <div class="avatar">{{ request.user.username|slice:":1"|upper }}</div>
+            <div>
+                <h1>{{ request.user.get_full_name|default:request.user.username }}</h1>
+                <p>{{ profile.role }} at {{ college.name }}</p>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for m in messages %}<div class="alert">{{ m }}</div>{% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" value="{{ request.user.username }}" disabled style="background:#f0f4fa;">
+            </div>
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" name="first_name" value="{{ request.user.first_name }}">
+            </div>
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" name="last_name" value="{{ request.user.last_name }}">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" value="{{ request.user.email }}">
+            </div>
+            <div class="form-group">
+                <label>New Password (leave blank to keep current)</label>
+                <input type="password" name="new_password" placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn"><i class="fas fa-save"></i> Save Changes</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

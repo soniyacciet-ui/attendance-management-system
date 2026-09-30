@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | Attendance System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4fa;
+            color: #0b1e33;
+            min-height: 100vh;
+        }
+        .header {
+            background: #0b2b4a;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .header .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .header .logo i { color: #7bb3ff; font-size: 1.3rem; }
+        .logout {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            background: rgba(255,255,255,0.06);
+        }
+        .logout:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        .container { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+
+        .profile-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0b2b4a, #1a4b73);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .profile-info h1 {
+            font-size: 1.3rem;
+            color: #0b2b4a;
+            margin-bottom: 0.2rem;
+        }
+        .profile-info p {
+            font-size: 0.85rem;
+            color: #6b7f99;
+        }
+        .lang-form {
+            margin-left: auto;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .lang-form select {
+            padding: 0.5rem 0.9rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            background: #f8fafd;
+            outline: none;
+        }
+        .lang-form button {
+            padding: 0.5rem 1.2rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .lang-form button:hover { background: #1d4ed8; }
+
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1rem 0;
+        }
+        .messages li {
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            background: #dcfce7;
+            color: #15803d;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .notification {
+            background: white;
+            border-radius: 20px;
+            padding: 1.3rem 1.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            margin-bottom: 1rem;
+            border-left: 4px solid #2563eb;
+        }
+        .notification.critical { border-left-color: #dc2626; }
+        .notification.low { border-left-color: #f59e0b; }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.6rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .notification-header h3 {
+            font-size: 1rem;
+            color: #0b2b4a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .notification-header .date {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+        .badge {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 40px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .badge.critical { background: #fee2e2; color: #dc2626; }
+        .badge.low { background: #fffbeb; color: #b45309; }
+        .badge.weekly { background: #e0e7ff; color: #4f46e5; }
+        .badge.other { background: #f1f5f9; color: #475569; }
+
+        .notification-body {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: #334155;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+        .lang-tag {
+            display: inline-block;
+            margin-top: 0.6rem;
+            font-size: 0.7rem;
+            color: #94a3b8;
+            background: #f8fafd;
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+        }
+
+        .empty {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem 1.5rem;
+            text-align: center;
+            color: #6b7f99;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+        }
+        .empty i {
+            font-size: 2.5rem;
+            color: #cbd5e1;
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+        .empty h3 { color: #0b2b4a; margin-bottom: 0.3rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-clipboard-check"></i>
+            Attendance System
+        </div>
+        <a href="{% url 'logout' %}" class="logout">
+            <i class="fas fa-right-from-bracket"></i> Logout
+        </a>
+    </div>
+
+    <div class="container">
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- PROFILE -->
+        <div class="profile-card">
+            <div class="avatar">{{ parent.name|first|upper }}</div>
+            <div class="profile-info">
+                <h1>{{ parent.name }}</h1>
+                <p>
+                    <i class="fas fa-user-graduate"></i>
+                    Parent of {{ parent.student.user.get_full_name|default:parent.student.user.username }}
+                    ({{ parent.student.register_number }})
+                </p>
+            </div>
+            <form method="POST" action="{% url 'change_language' %}" class="lang-form">
+                {% csrf_token %}
+                <select name="language">
+                    {% for code, name in languages %}
+                        <option value="{{ code }}" {% if code == parent.preferred_language %}selected{% endif %}>
+                            {{ name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">
+                    <i class="fas fa-language"></i> Change
+                </button>
+            </form>
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        {% if notifications %}
+            {% for n in notifications %}
+                <div class="notification {% if n.notification_type == 'CRITICAL_ATTENDANCE' %}critical{% elif n.notification_type == 'LOW_ATTENDANCE' %}low{% endif %}">
+                    <div class="notification-header">
+                        <h3>
+                            {% if n.notification_type == "CRITICAL_ATTENDANCE" %}
+                                <i class="fas fa-triangle-exclamation" style="color:#dc2626;"></i>
+                                <span class="badge critical">Critical</span>
+                            {% elif n.notification_type == "LOW_ATTENDANCE" %}
+                                <i class="fas fa-exclamation-circle" style="color:#f59e0b;"></i>
+                                <span class="badge low">Low Attendance</span>
+                            {% elif n.notification_type == "WEEKLY_SUMMARY" %}
+                                <i class="fas fa-calendar-week" style="color:#4f46e5;"></i>
+                                <span class="badge weekly">Weekly</span>
+                            {% else %}
+                                <i class="fas fa-bell" style="color:#64748b;"></i>
+                                <span class="badge other">{{ n.get_notification_type_display }}</span>
+                            {% endif %}
+                        </h3>
+                        <span class="date">
+                            {{ n.created_at|date:"M d, Y · H:i" }}
+                        </span>
+                    </div>
+                    <div class="notification-body">{{ n.message }}</div>
+                    <span class="lang-tag">
+                        <i class="fas fa-language"></i> {{ n.get_language_display }}
+                    </span>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                <i class="fas fa-inbox"></i>
+                <h3>No Notifications Yet</h3>
+                <p>You'll see attendance alerts here when they're sent.</p>
+            </div>
+        {% endif %}
+
+    </div>
+</body>
+</html>

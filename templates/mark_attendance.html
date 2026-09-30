@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance | {{ department.name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4fa;
+            color: #0b1e33;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: #0b2b4a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header h1 i {
+            color: #2563eb;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: #0b2b4a;
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #1a3f62;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #0b2b4a;
+            border: 1.5px solid #e2e8f0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6b7f99;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.04em;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            background: #f8fafd;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+            background: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 0.9rem 1rem;
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #4a6a8a;
+            letter-spacing: 0.05em;
+            background: #f8fafd;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid #f0f4fa;
+            font-size: 0.9rem;
+        }
+
+        tr:hover td {
+            background: #fafcff;
+        }
+
+        .attendance-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .attendance-options input {
+            display: none;
+        }
+
+        .attendance-options label {
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1.5px solid #e2e8f0;
+            background: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s;
+        }
+
+        .label-present {
+            color: #15803d;
+        }
+
+        .label-absent {
+            color: #dc2626;
+        }
+
+        .attendance-options input:checked+.label-present {
+            background: #dcfce7;
+            border-color: #22c55e;
+        }
+
+        .attendance-options input:checked+.label-absent {
+            background: #fee2e2;
+            border-color: #dc2626;
+        }
+
+        .save-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.9rem 2rem;
+            background: #0b2b4a;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 1.5rem;
+        }
+
+        .save-btn:hover {
+            background: #1a3f62;
+        }
+
+        .alert {
+            padding: 1rem 1.2rem;
+            border-radius: 14px;
+            margin-bottom: 1rem;
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            color: #92400e;
+        }
+
+        .alert a {
+            color: #b45309;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <h1>
+                <i class="fas fa-clipboard-check"></i>
+                Mark Attendance — {{ department.name }}
+            </h1>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                <a href="{% url 'manage_subjects' department.id %}" class="btn btn-outline">
+                    <i class="fas fa-book"></i> Manage Subjects
+                </a>
+                <a href="{% url 'manage_periods' department.id %}" class="btn btn-outline">
+                    <i class="fas fa-clock"></i> Manage Periods
+                </a>
+                <a href="{% url 'department_details' department.id %}" class="btn">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+
+        {% if messages %}
+        {% for m in messages %}
+        <div class="alert">{{ m }}</div>
+        {% endfor %}
+        {% endif %}
+
+        {% if no_subjects %}
+        <div class="card">
+            <div class="alert">
+                <strong>No subjects yet.</strong>
+                <a href="{% url 'manage_subjects' department.id %}">Add subjects</a>
+                to this department before marking attendance.
+            </div>
+        </div>
+        {% else %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="card">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select name="subject" required>
+                            <option value="">— Select Subject —</option>
+                            {% for sub in subjects %}
+                            <option value="{{ sub.id }}">{{ sub.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+    
+                        <div class="form-group">
+                            <label>Period / Hour</label>
+                            <select name="period" required>
+                                <option value="">— Select Period —</option>
+                                {% for p in periods %}
+                                <option value="{{ p.id }}">
+                                    Period {{ p.number }} ({{ p.start_time|time:"H:i" }} - {{ p.end_time|time:"H:i" }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    
+                </div>
+            </div>
+
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Register No.</th>
+                            <th>Student</th>
+                            <th>Attendance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><strong style="color:#2563eb;">{{ student.register_number }}</strong></td>
+                            <td>{{ student.user.get_full_name|default:student.user.username }}</td>
+                            <td>
+                                <div class="attendance-options">
+                                    <input type="radio" id="p_{{ student.id }}" name="attendance_{{ student.id }}"
+                                        value="PRESENT" required>
+                                    <label for="p_{{ student.id }}" class="label-present">
+                                        <i class="fas fa-check"></i> Present
+                                    </label>
+                                    <input type="radio" id="a_{{ student.id }}" name="attendance_{{ student.id }}"
+                                        value="ABSENT">
+                                    <label for="a_{{ student.id }}" class="label-absent">
+                                        <i class="fas fa-times"></i> Absent
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <button type="submit" class="save-btn">
+                    <i class="fas fa-save"></i> Save Attendance
+                </button>
+            </div>
+
+        </form>
+
+        {% endif %}
+
+    </div>
+</body>
+
+</html>

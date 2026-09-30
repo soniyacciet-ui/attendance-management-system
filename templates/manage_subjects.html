@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Subjects | {{ department.name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f0f4fa; padding: 2rem 1.5rem; color: #0b1e33; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header {
+            background: white; padding: 1.5rem 2rem; border-radius: 20px;
+            margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+        }
+        .header h1 { font-size: 1.5rem; color: #0b2b4a; display: flex; align-items: center; gap: 0.5rem; }
+        .header h1 i { color: #2563eb; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.6rem 1.2rem; background: #0b2b4a; color: white;
+            text-decoration: none; border-radius: 40px; font-size: 0.85rem;
+            font-weight: 500; border: none; cursor: pointer;
+        }
+        .btn:hover { background: #1a3f62; }
+        .btn-outline { background: transparent; color: #0b2b4a; border: 1.5px solid #e2e8f0; }
+        .card {
+            background: white; border-radius: 20px; padding: 1.5rem 2rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04); margin-bottom: 1.5rem;
+        }
+        .card h2 { font-size: 1.1rem; color: #0b2b4a; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .form-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 0.8rem; align-items: end; }
+        .form-group label {
+            display: block; font-size: 0.7rem; font-weight: 600;
+            text-transform: uppercase; color: #6b7f99; margin-bottom: 0.3rem;
+        }
+        .form-group input {
+            width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; font-family: inherit; font-size: 0.9rem;
+            background: #f8fafd; outline: none;
+        }
+        .form-group input:focus { border-color: #2563eb; background: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td {
+            padding: 0.8rem 0.6rem; text-align: left;
+            border-bottom: 1px solid #f0f4fa; font-size: 0.9rem;
+        }
+        th { color: #4a6a8a; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; }
+        .delete-btn {
+            color: #dc2626; background: #fee2e2; padding: 0.3rem 0.8rem;
+            border-radius: 40px; text-decoration: none; font-size: 0.75rem;
+            display: inline-flex; align-items: center; gap: 0.3rem;
+        }
+        .delete-btn:hover { background: #fecaca; }
+        .alert {
+            padding: 0.9rem 1.2rem; border-radius: 12px; margin-bottom: 1rem;
+            background: #dcfce7; color: #15803d; border-left: 4px solid #22c55e;
+        }
+        .empty { color: #6b7f99; padding: 2rem; text-align: center; }
+        @media (max-width: 640px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <h1><i class="fas fa-book"></i> Subjects — {{ department.name }}</h1>
+        <a href="{% url 'mark_attendance' department.id %}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Back to Attendance
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for m in messages %}
+            <div class="alert">{{ m }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <h2><i class="fas fa-plus-circle" style="color:#2563eb;"></i> Add Subject</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Subject Name</label>
+                    <input type="text" name="name" placeholder="e.g., Mathematics" required>
+                </div>
+                <div class="form-group">
+                    <label>Code</label>
+                    <input type="text" name="code" placeholder="MATH101">
+                </div>
+                <div class="form-group">
+                    <label>Hours/Week</label>
+                    <input type="number" name="hours_per_week" value="4" min="1" max="20">
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-plus"></i> Add
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2><i class="fas fa-list" style="color:#2563eb;"></i> Subjects ({{ subjects|length }})</h2>
+        {% if subjects %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Hours/Week</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in subjects %}
+                <tr>
+                    <td><strong>{{ s.name }}</strong></td>
+                    <td>{{ s.code|default:"—" }}</td>
+                    <td>{{ s.hours_per_week }}</td>
+                    <td>
+                        <a href="{% url 'delete_subject' s.id %}" class="delete-btn">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">
+            <i class="fas fa-book-open" style="font-size:2rem;opacity:0.3;display:block;margin-bottom:0.5rem;"></i>
+            No subjects yet. Add one above.
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+</body>
+</html>

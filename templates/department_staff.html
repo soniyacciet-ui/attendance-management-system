@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ department.name }} - Staff</title>
+
+    <!-- Google Font & Font Awesome for modern icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: #f0f4fa;
+            color: #0b1e33;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ----- header card ----- */
+        .header-card {
+            background: white;
+            padding: 1.8rem 2rem 2rem;
+            border-radius: 24px;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: box-shadow 0.25s ease;
+        }
+
+        .header-card:hover {
+            box-shadow: 0 8px 24px -8px rgba(11, 43, 74, 0.08);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            letter-spacing: -0.02em;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .header-left h1 i {
+            color: #2563eb;
+            font-size: 1.6rem;
+            opacity: 0.6;
+        }
+
+        .header-left .subtitle {
+            color: #6b7f99;
+            font-size: 0.9rem;
+            margin-top: 0.15rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .header-left .subtitle i {
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn i {
+            font-size: 0.85rem;
+        }
+
+        .btn-back {
+            background: #f1f4f9;
+            color: #374151;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-back:hover {
+            background: #e5eaf0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-primary {
+            background: #0b2b4a;
+            color: white;
+            box-shadow: 0 4px 12px rgba(11, 43, 74, 0.15);
+        }
+
+        .btn-primary:hover {
+            background: #1a3f62;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(11, 43, 74, 0.25);
+        }
+
+        .btn-primary i {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* ----- table card ----- */
+        .table-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 0 0.2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: #f8fafd;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        th {
+            padding: 1rem 1.2rem;
+            text-align: left;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #4a6a8a;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid #f0f4fa;
+            color: #1a3650;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #fafcff;
+        }
+
+        .staff-name {
+            font-weight: 500;
+            color: #0b2b4a;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .staff-name .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0b2b4a, #1a4b73);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .staff-id {
+            font-weight: 500;
+            color: #2563eb;
+            font-size: 0.85rem;
+        }
+
+        .staff-username {
+            color: #6b7f99;
+            font-size: 0.85rem;
+        }
+
+        .action-links {
+            display: flex;
+            gap: 0.2rem;
+            flex-wrap: wrap;
+        }
+
+        .action-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.9rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .action-edit {
+            color: #2563eb;
+            background: rgba(37, 99, 235, 0.06);
+        }
+
+        .action-edit:hover {
+            background: rgba(37, 99, 235, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .action-delete {
+            color: #dc2626;
+            background: rgba(220, 38, 38, 0.06);
+        }
+
+        .action-delete:hover {
+            background: rgba(220, 38, 38, 0.12);
+            transform: translateY(-1px);
+        }
+
+        /* ----- empty state ----- */
+        .empty-state {
+            text-align: center;
+            padding: 3.5rem 1.5rem;
+            color: #6b7f99;
+        }
+
+        .empty-state .empty-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .empty-state h3 {
+            color: #0b2b4a;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+        }
+
+        /* ----- responsive ----- */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .header-card {
+                padding: 1.2rem 1.2rem 1.5rem;
+            }
+            .header-top {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .header-actions {
+                justify-content: flex-start;
+            }
+            .header-left h1 {
+                font-size: 1.4rem;
+            }
+            th, td {
+                padding: 0.8rem 0.8rem;
+                font-size: 0.85rem;
+            }
+            .action-links a {
+                padding: 0.2rem 0.7rem;
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .header-actions .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+            .staff-name .avatar {
+                width: 26px;
+                height: 26px;
+                font-size: 0.65rem;
+            }
+            .action-links a {
+                padding: 0.15rem 0.6rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ===== HEADER CARD ===== -->
+    <div class="header-card">
+
+        <div class="header-top">
+            <div class="header-left">
+                <h1>
+                    <i class="fas fa-chalkboard-user"></i>
+                    {{ department.name }} - Staff
+                </h1>
+                <div class="subtitle">
+                    <i class="fas fa-building-columns"></i>
+                    {{ college.name }}
+                    <span style="opacity:0.3;margin:0 0.2rem;">•</span>
+                    <span>{{ staff|length }} staff members</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <a href="{% url 'department_details' department.id %}" class="btn btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Department
+                </a>
+                <a href="{% url 'add_staff' department.id %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Add Staff
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== TABLE CARD ===== -->
+    <div class="table-card">
+
+        {% if staff %}
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Staff ID</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th style="text-align:right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in staff %}
+                            <tr>
+                                <td>
+                                    <span class="staff-id">
+                                        <i class="fas fa-id-badge" style="opacity:0.4;font-size:0.7rem;margin-right:0.2rem;"></i>
+                                        {{ member.staff_id }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="staff-name">
+                                        <span class="avatar">
+                                            {{ member.user.get_full_name|default:member.user.username|first|upper }}
+                                        </span>
+                                        {{ member.user.get_full_name|default:member.user.username }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="staff-username">
+                                        <i class="fas fa-user" style="opacity:0.3;font-size:0.7rem;margin-right:0.3rem;"></i>
+                                        {{ member.user.username }}
+                                    </span>
+                                </td>
+                                <td style="text-align:right;">
+                                    <div class="action-links" style="justify-content:flex-end;">
+                                        <a href="{% url 'edit_staff' member.id %}" class="action-edit">
+                                            <i class="fas fa-pen"></i> Edit
+                                        </a>
+                                        <a href="{% url 'delete_staff' member.id %}" class="action-delete">
+                                            <i class="fas fa-trash-can"></i> Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% else %}
+
+            <!-- ===== EMPTY STATE ===== -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-users-slash"></i>
+                </div>
+                <h3>No Staff Members</h3>
+                <p>There are no staff members in this department yet.</p>
+                <div style="margin-top:1.2rem;">
+                    <a href="{% url 'add_staff' department.id %}" class="btn btn-primary" style="display:inline-flex;">
+                        <i class="fas fa-plus"></i>
+                        Add Staff
+                    </a>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

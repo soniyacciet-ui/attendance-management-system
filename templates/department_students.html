@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ department.name }} - Students</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: #f0f4fa;
+            color: #0b1e33;
+            padding: 2rem 1.5rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .header-card {
+            background: white;
+            padding: 1.8rem 2rem;
+            border-radius: 24px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-card h1 {
+            font-size: 1.6rem;
+            color: #0b2b4a;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .header-card h1 i { color: #2563eb; opacity: 0.6; }
+
+        .header-card .subtitle {
+            color: #6b7f99;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+
+        .header-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: #0b2b4a;
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover { background: #1a3f62; transform: translateY(-2px); }
+
+        .btn.outline {
+            background: transparent;
+            color: #0b2b4a;
+            border: 1.5px solid #e2e8f0;
+        }
+
+        .btn.outline:hover { background: #f8fafd; }
+
+        .table-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        thead { background: #f8fafd; }
+
+        th {
+            padding: 0.9rem 1.2rem;
+            text-align: left;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #4a6a8a;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 0.9rem 1.2rem;
+            border-top: 1px solid #f0f4fa;
+            font-size: 0.88rem;
+            vertical-align: middle;
+        }
+
+        tr:hover td { background: #fafcff; }
+
+        .student-name {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .avatar {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0b2b4a, #1a4b73);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .reg-num {
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .parent-status { font-size: 0.8rem; font-weight: 600; }
+        .parent-status.has { color: #16a34a; }
+        .parent-status.none { color: #94a3b8; }
+
+        .actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+        .action-btn {
+            padding: 0.35rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.72rem;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .action-btn.edit { background: #e0f2fe; color: #0369a1; }
+        .action-btn.delete { background: #fee2e2; color: #dc2626; }
+        .action-btn.parent { background: #ede9fe; color: #6d28d9; }
+        .action-btn.notify { background: #fef3c7; color: #b45309; }
+        .action-btn:hover { transform: translateY(-1px); }
+
+        .empty {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: #6b7f99;
+        }
+
+        .empty i {
+            font-size: 2.5rem;
+            color: #cbd5e1;
+            display: block;
+            margin-bottom: 0.6rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header-card">
+        <div>
+            <h1>
+                <i class="fas fa-user-graduate"></i>
+                {{ department.name }} — Students
+            </h1>
+            <div class="subtitle">
+                <i class="fas fa-users" style="opacity:0.5;"></i>
+                {{ students|length }} student{{ students|length|pluralize }}
+                &nbsp;·&nbsp;
+                <i class="fas fa-building-columns" style="opacity:0.5;"></i>
+                {{ college.name }}
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'department_details' department.id %}" class="btn outline">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <a href="{% url 'add_student' department.id %}" class="btn">
+                <i class="fas fa-plus"></i> Add Student
+            </a>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+
+        {% if students %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Register No.</th>
+                    <th>Student</th>
+                    <th>Parents</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>
+                        <span class="reg-num">{{ student.register_number }}</span>
+                    </td>
+                    <td>
+                        <div class="student-name">
+                            <span class="avatar">
+                                {{ student.user.get_full_name|default:student.user.username|first|upper }}
+                            </span>
+                            <span>{{ student.user.get_full_name|default:student.user.username }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        {% with pc=student.parents.count %}
+                            {% if pc > 0 %}
+                                <span class="parent-status has">
+                                    <i class="fas fa-check-circle"></i> {{ pc }} registered
+                                </span>
+                            {% else %}
+                                <span class="parent-status none">
+                                    <i class="fas fa-user-slash"></i> None
+                                </span>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'edit_student' student.id %}" class="action-btn edit">
+                                <i class="fas fa-pen"></i> Edit
+                            </a>
+                            <a href="{% url 'delete_student' student.id %}" class="action-btn delete">
+                                <i class="fas fa-trash-can"></i> Delete
+                            </a>
+                            <a href="{% url 'add_parent' student.id %}" class="action-btn parent">
+                                <i class="fas fa-user-plus"></i> Add Parent
+                            </a>
+                            {% if student.parents.count > 0 %}
+                                <a href="{% url 'notify_low_attendance' student.id %}" class="action-btn notify">
+                                    <i class="fas fa-bell"></i> Notify
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+
+        <div class="empty">
+            <i class="fas fa-user-graduate"></i>
+            <h3 style="color:#0b2b4a;margin-bottom:0.4rem;">No Students Yet</h3>
+            <p>Add the first student to this department.</p>
+            <a href="{% url 'add_student' department.id %}" class="btn" style="margin-top:1rem;">
+                <i class="fas fa-plus"></i> Add Student
+            </a>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

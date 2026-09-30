@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | Attendance System</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: #f0f4fa;
+            color: #0b1e33;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #0b2b4a;
+            color: white;
+            padding: 1rem 2.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .header .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .header .logo i {
+            color: #7bb3ff;
+            font-size: 1.4rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+            border-radius: 40px;
+        }
+
+        .user-badge .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #7bb3ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            background: rgba(220, 38, 38, 0.2);
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* ---------- PROFILE HEADER ---------- */
+        .profile-header-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.8rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            flex-wrap: wrap;
+        }
+
+        .profile-header-card .avatar-large {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0b2b4a, #1a4b73);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .profile-header-card .info h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            margin-bottom: 0.2rem;
+        }
+
+        .profile-header-card .info p {
+            color: #6b7f99;
+            font-size: 0.9rem;
+        }
+
+        .profile-header-card .info p i {
+            opacity: 0.4;
+            font-size: 0.75rem;
+            margin-right: 0.3rem;
+        }
+
+        /* ---------- STATS GRID ---------- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.2rem 1.4rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: all 0.25s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px -8px rgba(11, 43, 74, 0.08);
+        }
+
+        .stat-card .stat-label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6b7f99;
+            font-weight: 500;
+        }
+
+        .stat-card .stat-label i {
+            color: #2563eb;
+            opacity: 0.4;
+            font-size: 0.8rem;
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            margin-top: 0.15rem;
+            letter-spacing: -0.02em;
+        }
+
+        /* ---------- GENERIC CARD ---------- */
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            margin: 0;
+        }
+
+        .card-header i {
+            color: #2563eb;
+            opacity: 0.5;
+            font-size: 1.05rem;
+        }
+
+        /* ---------- ELIGIBILITY BANNER ---------- */
+        .eligibility-banner {
+            padding: 1.4rem 1.6rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .eligibility-banner.eligible {
+            background: linear-gradient(135deg, #dcfce7 0%, #ecfdf5 100%);
+            border: 1px solid #86efac;
+        }
+
+        .eligibility-banner.not-eligible {
+            background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
+            border: 1px solid #fca5a5;
+        }
+
+        .eligibility-banner.no-data {
+            background: linear-gradient(135deg, #f1f5f9 0%, #f8fafc 100%);
+            border: 1px solid #cbd5e1;
+        }
+
+        .eligibility-banner .badge-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .eligibility-banner.eligible .badge-icon {
+            background: #22c55e;
+            color: white;
+        }
+
+        .eligibility-banner.not-eligible .badge-icon {
+            background: #dc2626;
+            color: white;
+        }
+
+        .eligibility-banner.no-data .badge-icon {
+            background: #94a3b8;
+            color: white;
+        }
+
+        .eligibility-banner .badge-text h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+        }
+
+        .eligibility-banner.eligible .badge-text h3 {
+            color: #15803d;
+        }
+
+        .eligibility-banner.not-eligible .badge-text h3 {
+            color: #dc2626;
+        }
+
+        .eligibility-banner.no-data .badge-text h3 {
+            color: #475569;
+        }
+
+        .eligibility-banner .badge-text p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* ---------- XAI REASONS LIST ---------- */
+        .xai-reasons {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .xai-reasons li {
+            padding: 0.7rem 1rem 0.7rem 2.4rem;
+            margin-bottom: 0.5rem;
+            background: #f8fafd;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #1a3650;
+            position: relative;
+            border-left: 3px solid #2563eb;
+            line-height: 1.5;
+        }
+
+        .xai-reasons li::before {
+            content: "\f0da";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 1rem;
+            top: 0.75rem;
+            color: #2563eb;
+            font-size: 0.75rem;
+        }
+
+        /* ---------- AI RISK CARD ---------- */
+        .risk-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            padding: 1.4rem 1.6rem;
+            border-radius: 20px;
+            flex-wrap: wrap;
+        }
+
+        .risk-card.safe {
+            background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+            border: 1px solid #86efac;
+        }
+
+        .risk-card.at-risk {
+            background: linear-gradient(135deg, #fee2e2, #fff1f2);
+            border: 1px solid #fca5a5;
+        }
+
+        .risk-card .risk-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .risk-card.safe .risk-info h3 {
+            color: #15803d;
+        }
+
+        .risk-card.at-risk .risk-info h3 {
+            color: #dc2626;
+        }
+
+        .risk-card .risk-info p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            color: #334155;
+        }
+
+        .risk-card .risk-prob {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .risk-card.safe .risk-prob {
+            color: #16a34a;
+        }
+
+        .risk-card.at-risk .risk-prob {
+            color: #dc2626;
+        }
+
+        /* ---------- ANOMALY CARD ---------- */
+        .anomaly {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            border-radius: 16px;
+            margin-bottom: 0.7rem;
+            background: #f8fafd;
+            border-left: 4px solid #94a3b8;
+            align-items: flex-start;
+        }
+
+        .anomaly.decline,
+        .anomaly.streak {
+            background: #fef2f2;
+            border-left-color: #dc2626;
+        }
+
+        .anomaly.improvement {
+            background: #f0fdf4;
+            border-left-color: #22c55e;
+        }
+
+        .anomaly.pattern {
+            background: #fffbeb;
+            border-left-color: #f59e0b;
+        }
+
+        .anomaly .anomaly-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .anomaly.decline .anomaly-icon,
+        .anomaly.streak .anomaly-icon {
+            color: #dc2626;
+        }
+
+        .anomaly.improvement .anomaly-icon {
+            color: #22c55e;
+        }
+
+        .anomaly.pattern .anomaly-icon {
+            color: #f59e0b;
+        }
+
+        .anomaly .anomaly-content h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            margin-bottom: 0.15rem;
+        }
+
+        .anomaly .anomaly-content p {
+            font-size: 0.85rem;
+            color: #4a6a8a;
+            line-height: 1.5;
+        }
+
+        /* ---------- RECOMMENDATION CARD ---------- */
+        .recommendation {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            border-radius: 16px;
+            margin-bottom: 0.7rem;
+            background: #f8fafd;
+            align-items: flex-start;
+            border: 1px solid #eef2f7;
+        }
+
+        .recommendation .rec-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .recommendation.positive .rec-icon {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .recommendation.warning .rec-icon {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .recommendation.insight .rec-icon {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .recommendation.action .rec-icon {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .recommendation .rec-content h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #0b2b4a;
+            margin-bottom: 0.15rem;
+        }
+
+        .recommendation .rec-content p {
+            font-size: 0.85rem;
+            color: #4a6a8a;
+            line-height: 1.5;
+        }
+
+        .empty-xai {
+            text-align: center;
+            padding: 1.5rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* ---------- PERCENTAGE HERO ---------- */
+        .percentage-hero {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .percentage-hero .number {
+            font-size: 3.4rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .percentage-hero .number.safe {
+            color: #16a34a;
+        }
+
+        .percentage-hero .number.warning {
+            color: #dc2626;
+        }
+
+        .percentage-hero .number.neutral {
+            color: #6b7f99;
+        }
+
+        .percentage-hero .required {
+            font-size: 0.95rem;
+            color: #4a6a8a;
+        }
+
+        .percentage-hero .required strong {
+            color: #0b2b4a;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 0.8rem 1.2rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+                margin: 1.2rem auto;
+            }
+
+            .card {
+                padding: 1.3rem 1.4rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.7rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-card .stat-value {
+                font-size: 1.4rem;
+            }
+
+            .profile-header-card {
+                padding: 1.2rem;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logout-btn span {
+                display: none;
+            }
+
+            .user-badge .name {
+                display: none;
+            }
+
+            .percentage-hero .number {
+                font-size: 2.4rem;
+            }
+
+            .risk-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-clipboard-check"></i>
+            Attendance System
+        </div>
+        <div class="header-actions">
+            <div class="user-badge">
+                <span class="avatar">
+                    {{ student.user.get_full_name|default:student.user.username|first|upper }}
+                </span>
+                <span class="name">
+                    {{ student.user.get_full_name|default:student.user.username }}
+                </span>
+            </div>
+            <a href="{% url 'student_portal' %}">
+                <i class="fas fa-user-circle"></i> My Portal
+            </a>
+            <a href="{% url 'logout' %}" class="logout-btn">
+                <i class="fas fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- ================= PROFILE HEADER ================= -->
+        <div class="profile-header-card">
+            <div class="avatar-large">
+                {{ student.user.get_full_name|default:student.user.username|first|upper }}
+            </div>
+            <div class="info">
+                <h1>{{ student.user.get_full_name|default:student.user.username }}</h1>
+                <p>
+                    <i class="fas fa-id-badge"></i>
+                    Register No: {{ student.register_number }}
+                    &nbsp;·&nbsp;
+                    <i class="fas fa-building-columns"></i>
+                    {{ student.department.name }}
+                    &nbsp;·&nbsp;
+                    <i class="fas fa-school"></i>
+                    {{ student.college.name }}
+                </p>
+            </div>
+        </div>
+
+        <!-- ================= STATS ================= -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">
+                    <i class="fas fa-calendar-day"></i> Total Classes
+                </div>
+                <div class="stat-value">{{ total_classes }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">
+                    <i class="fas fa-circle-check"></i> Attended
+                </div>
+                <div class="stat-value">{{ attended_classes }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">
+                    <i class="fas fa-circle-xmark"></i> Absent
+                </div>
+                <div class="stat-value">{{ absent_classes }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">
+                    <i class="fas fa-percent"></i> Attendance
+                </div>
+                <div class="stat-value">{{ attendance_percentage }}%</div>
+            </div>
+        </div>
+
+        <!-- ================= ATTENDANCE % HERO ================= -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-simple"></i>
+                <h2>Attendance Overview</h2>
+            </div>
+
+            <div class="percentage-hero">
+                <span class="number
+                    {% if eligibility == 'ELIGIBLE' %}safe
+                    {% elif eligibility == 'NOT ELIGIBLE' %}warning
+                    {% else %}neutral{% endif %}">
+                    {{ attendance_percentage }}%
+                </span>
+                <span class="required">
+                    Required: <strong>{{ required_percentage }}%</strong>
+                </span>
+            </div>
+
+            <!-- ELIGIBILITY BANNER -->
+            {% if eligibility == "ELIGIBLE" %}
+            <div class="eligibility-banner eligible">
+                <div class="badge-icon"><i class="fas fa-check"></i></div>
+                <div class="badge-text">
+                    <h3>You are Eligible</h3>
+                    <p>Your attendance meets the department requirement.</p>
+                </div>
+            </div>
+            {% elif eligibility == "NOT ELIGIBLE" %}
+            <div class="eligibility-banner not-eligible">
+                <div class="badge-icon"><i class="fas fa-xmark"></i></div>
+                <div class="badge-text">
+                    <h3>Not Eligible</h3>
+                    <p>Your attendance is below the required percentage.</p>
+                </div>
+            </div>
+            {% else %}
+            <div class="eligibility-banner no-data">
+                <div class="badge-icon"><i class="fas fa-info"></i></div>
+                <div class="badge-text">
+                    <h3>No Attendance Yet</h3>
+                    <p>Attendance has not been recorded.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ================= XAI: WHY THIS DECISION ================= -->
+        {% if eligibility_reasons %}
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-circle-question"></i>
+                <h2>Why this decision?</h2>
+            </div>
+            <ul class="xai-reasons">
+                {% for reason in eligibility_reasons %}
+                <li>{{ reason }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- ================= XAI: AI RISK PREDICTION ================= -->
+        {% if total_classes > 0 %}
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-brain"></i>
+                <h2>AI Risk Prediction</h2>
+            </div>
+
+            <div class="risk-card {% if risk_status == 'SAFE' %}safe{% else %}at-risk{% endif %}">
+                <div class="risk-info">
+                    <h3>
+                        {% if risk_status == "SAFE" %}
+                        <i class="fas fa-shield-halved"></i> Safe
+                        {% else %}
+                        <i class="fas fa-triangle-exclamation"></i> At Risk
+                        {% endif %}
+                    </h3>
+                    <p>
+                        {% if risk_status == "SAFE" %}
+                        You are predicted to remain eligible based on your attendance trend.
+                        {% else %}
+                        You are predicted to fall below the required percentage.
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="risk-prob">
+                    {{ risk_probability }}%
+                </div>
+            </div>
+
+            {% if shap_explanations %}
+            <div style="margin-top:1.2rem;">
+                <h4
+                    style="font-size:0.85rem;color:#6b7f99;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.6rem;">
+                    <i class="fas fa-chart-bar" style="opacity:0.5;margin-right:0.3rem;"></i>
+                    Feature Contributions (SHAP)
+                </h4>
+                <ul class="xai-reasons">
+                    {% for explanation in shap_explanations %}
+                    <li>{{ explanation }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- ================= XAI: ANOMALIES ================= -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-magnifying-glass-chart"></i>
+                <h2>Pattern Detection</h2>
+            </div>
+
+            {% if anomalies %}
+            {% for anomaly in anomalies %}
+            <div class="anomaly {{ anomaly.type|lower }}">
+                <div class="anomaly-icon">
+                    <i class="fas {{ anomaly.icon }}"></i>
+                </div>
+                <div class="anomaly-content">
+                    <h4>{{ anomaly.title }}</h4>
+                    <p>{{ anomaly.detail }}</p>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="empty-xai">
+                <i class="fas fa-circle-check" style="color:#22c55e;margin-right:0.4rem;"></i>
+                No unusual patterns detected. Your attendance looks consistent.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ================= XAI: RECOMMENDATIONS ================= -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-lightbulb"></i>
+                <h2>Personalized Recommendations</h2>
+            </div>
+
+            {% if recommendations %}
+            {% for rec in recommendations %}
+            <div class="recommendation {{ rec.type|lower }}">
+                <div class="rec-icon">
+                    <i class="fas {{ rec.icon }}"></i>
+                </div>
+                <div class="rec-content">
+                    <h4>{{ rec.title }}</h4>
+                    <p>{{ rec.detail }}</p>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="empty-xai">
+                <i class="fas fa-info-circle" style="margin-right:0.4rem;opacity:0.5;"></i>
+                Not enough data yet to generate recommendations.
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</body>
+
+</html>
