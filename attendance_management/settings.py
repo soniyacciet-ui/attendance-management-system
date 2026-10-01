@@ -135,8 +135,9 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-dev-only-key-change-in-prod")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
-EMAIL_BACKEND = "attendance.resend_backend.ResendEmailBackend"
+EMAIL_BACKEND = "attendance.brevo_backend.BrevoEmailBackend"
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Attendance System <noreply@example.com>")
