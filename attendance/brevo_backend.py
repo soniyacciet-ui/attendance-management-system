@@ -1,26 +1,26 @@
-﻿"""Django email backend using Brevo HTTP API (works on Render)."""
+﻿"""Django email backend using Brevo HTTP API (with failsafe)."""
 import base64
+import requests
 from django.core.mail.backends.base import BaseEmailBackend
 from django.conf import settings
 
-import sib_api_v3_sdk
-from sib_api_v3_sdk.rest import ApiException
-
 
 class BrevoEmailBackend(BaseEmailBackend):
+    """
+    Uses Brevo HTTP API directly via requests (no sib-api-v3-sdk needed).
+    This avoids Python 3.13 compatibility issues with the SDK.
+    """
+
     def send_messages(self, email_messages):
-        if not settings.BREVO_API_KEY:
+        api_key = (getattr(settings, "BREVO_API_KEY", "") or "").strip()
+        if not api_key:
             print("[brevo] No API key set")
             return 0
-
-        configuration = sib_api_v3_sdk.Configuration()
-        configuration.api_key["api-key"] = settings.BREVO_API_KEY.strip()        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
-            sib_api_v3_sdk.ApiClient(configuration)
-        )
 
         sent = 0
         for message in email_messages:
             try:
+                # Build attachments list
                 attachments = []
                 for attachment in message.attachments:
                     if isinstance(attachment, tuple):
@@ -28,32 +28,47 @@ class BrevoEmailBackend(BaseEmailBackend):
                     else:
                         filename = attachment[0]
                         content = attachment[1]
+
                     if isinstance(content, str):
                         content = content.encode("utf-8")
+
                     attachments.append({
                         "content": base64.b64encode(content).decode("ascii"),
                         "name": filename,
                     })
 
-                to_list = [{"email": email} for email in message.to]
-
-                send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-                    to=to_list,
-                    sender={
+                # Build the payload
+                payload = {
+                    "sender": {
                         "email": settings.DEFAULT_FROM_EMAIL,
                         "name": "Attendance System",
                     },
-                    subject=message.subject,
-                    text_content=message.body,
-                    attachment=attachments if attachments else None,
+                    "to": [{"email": email} for email in message.to],
+                    "subject": message.subject,
+                    "textContent": message.body,
+                }
+
+                if attachments:
+                    payload["attachment"] = attachments
+
+                # Send via Brevo HTTP API
+                response = requests.post(
+                    "https://api.brevo.com/v3/smtp/email",
+                    headers={
+                        "accept": "application/json",
+                        "api-key": api_key,
+                        "content-type": "application/json",
+                    },
+                    json=payload,
+                    timeout=20,
                 )
 
-                api_response = api_instance.send_transac_email(send_smtp_email)
-                print(f"[brevo] Sent to {message.to} (ID: {api_response.message_id})")
-                sent += 1
+                if response.status_code in (200, 201):
+                    print(f"[brevo] Sent to {list(message.to)}")
+                    sent += 1
+                else:
+                    print(f"[brevo] Failed: {response.status_code} {response.text[:200]}")
 
-            except ApiException as e:
-                print(f"[brevo] API error: {e}")
             except Exception as e:
                 print(f"[brevo] Error: {e}")
 
