@@ -109,7 +109,30 @@ class Student(models.Model):
 
     register_number = models.CharField(max_length=50)
 
+    # ----------------------------------------------------------------
+    # NEW FIELDS (added for Bulk Excel Import + edit form)
+    # All optional → existing rows keep working unchanged.
+    # ----------------------------------------------------------------
+    email = models.EmailField(blank=True, default="")
+    phone = models.CharField(max_length=20, blank=True, default="")
+    gender = models.CharField(
+        max_length=10,
+        blank=True,
+        default="",
+        choices=[("MALE", "Male"), ("FEMALE", "Female"), ("OTHER", "Other")],
+    )
+    dob = models.DateField(null=True, blank=True)
+    year = models.PositiveIntegerField(null=True, blank=True)
+    section = models.CharField(max_length=10, blank=True, default="")
+
     def __str__(self):
+        return self.register_number
+
+    def display_name(self):
+        """Safe name for templates — falls back to register_number."""
+        if self.user:
+            full = self.user.get_full_name()
+            return full or self.user.username or self.register_number
         return self.register_number
 
 

@@ -5,214 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Student | Attendance System</title>
 
-    <!-- Google Font & Font Awesome for modern icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Inter', -apple-system, system-ui, sans-serif;
             background: linear-gradient(145deg, #eef4fa 0%, #dce6f2 100%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 2rem 1.5rem;
             color: #0b1e33;
         }
 
-        .container {
-            width: 100%;
-            max-width: 560px;
-            margin: 0 auto;
-        }
+        .container { width: 100%; max-width: 680px; margin: 0 auto; }
 
-        /* ----- back link ----- */
         .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            color: #2563eb; text-decoration: none;
+            font-weight: 500; font-size: 0.9rem;
             padding: 0.5rem 1rem 0.5rem 0.2rem;
             border-radius: 40px;
             transition: all 0.2s ease;
-            background: rgba(37, 99, 235, 0.04);
-            margin-bottom: 0.2rem;
+            background: rgba(37,99,235,0.04);
+            margin-bottom: 0.6rem;
         }
+        .back-link:hover { background: rgba(37,99,235,0.08); color: #1d4ed8; }
+        .back-link:hover i { transform: translateX(-4px); }
+        .back-link i { transition: transform 0.2s ease; }
 
-        .back-link i {
-            font-size: 0.9rem;
-            transition: transform 0.2s ease;
-        }
-
-        .back-link:hover {
-            background: rgba(37, 99, 235, 0.08);
-            color: #1d4ed8;
-        }
-
-        .back-link:hover i {
-            transform: translateX(-4px);
-        }
-
-        /* ----- main card ----- */
         .card {
             background: #ffffff;
             margin-top: 0.6rem;
             padding: 2.6rem 2.4rem 2.8rem;
             border-radius: 36px;
-            box-shadow: 
-                0 20px 40px -12px rgba(11, 43, 74, 0.20),
-                0 8px 24px -6px rgba(0, 20, 40, 0.06),
-                inset 0 1px 1px rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: transform 0.2s ease, box-shadow 0.25s ease;
+            box-shadow:
+                0 20px 40px -12px rgba(11,43,74,0.20),
+                0 8px 24px -6px rgba(0,20,40,0.06),
+                inset 0 1px 1px rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.5);
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 28px 48px -14px rgba(11, 43, 74, 0.25);
-        }
-
-        /* ----- header ----- */
         .card-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 0.2rem;
+            display: flex; align-items: center;
+            gap: 0.75rem; margin-bottom: 0.2rem;
         }
-
         .card-header i {
-            font-size: 1.8rem;
-            color: #2563eb;
-            background: rgba(37, 99, 235, 0.08);
-            padding: 0.5rem 0.6rem;
-            border-radius: 18px;
+            font-size: 1.8rem; color: #2563eb;
+            background: rgba(37,99,235,0.08);
+            padding: 0.5rem 0.6rem; border-radius: 18px;
         }
-
         .card-header h1 {
-            font-size: 1.7rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: #0b2b4a;
+            font-size: 1.7rem; font-weight: 700;
+            letter-spacing: -0.02em; color: #0b2b4a;
             margin: 0;
         }
 
         .subtitle {
-            color: #4a6a8a;
-            font-size: 0.95rem;
-            font-weight: 400;
+            color: #4a6a8a; font-size: 0.95rem;
             margin: 0.2rem 0 1.8rem 0;
             padding-left: 3.2rem;
-            letter-spacing: 0.01em;
         }
 
-        /* ----- department badge ----- */
         .dept-badge {
             background: #eff6ff;
             padding: 0.8rem 1.4rem;
             border-radius: 20px;
             margin-bottom: 1.8rem;
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center;
             gap: 1rem;
-            border: 1px solid rgba(37, 99, 235, 0.08);
+            border: 1px solid rgba(37,99,235,0.08);
             flex-wrap: wrap;
         }
-
         .dept-badge .label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #6b7280;
+            font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 0.05em; color: #6b7280;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
+            display: flex; align-items: center; gap: 0.4rem;
         }
-
-        .dept-badge .label i {
-            color: #2563eb;
-            font-size: 0.85rem;
-        }
-
+        .dept-badge .label i { color: #2563eb; font-size: 0.85rem; }
         .dept-badge .dept-name {
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1rem; font-weight: 600;
             color: #2563eb;
-            background: rgba(37, 99, 235, 0.06);
+            background: rgba(37,99,235,0.06);
             padding: 0.15rem 1.2rem;
             border-radius: 40px;
-            border: 1px solid rgba(37, 99, 235, 0.08);
+            border: 1px solid rgba(37,99,235,0.08);
         }
 
-        /* ----- error ----- */
         .error {
-            background: #fef2f2;
-            color: #b91c1c;
+            background: #fef2f2; color: #b91c1c;
             padding: 0.85rem 1.2rem;
             border-radius: 16px;
             margin-bottom: 1.5rem;
             font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
+            display: flex; align-items: center; gap: 0.6rem;
             border-left: 4px solid #b91c1c;
         }
+        .error i { color: #b91c1c; font-size: 1rem; }
 
-        .error i {
-            color: #b91c1c;
-            font-size: 1rem;
-        }
-
-        /* ----- form groups ----- */
-        .form-group {
-            margin-bottom: 1.4rem;
-        }
-
+        .form-group { margin-bottom: 1.4rem; }
         .form-group label {
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center;
             gap: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #1a3650;
-            margin-bottom: 0.4rem;
+            font-weight: 600; font-size: 0.9rem;
+            color: #1a3650; margin-bottom: 0.4rem;
         }
-
         .form-group label i {
-            color: #2563eb;
-            font-size: 0.95rem;
-            width: 1.2rem;
-            opacity: 0.8;
+            color: #2563eb; font-size: 0.95rem;
+            width: 1.2rem; opacity: 0.8;
         }
 
         .input-wrapper {
-            position: relative;
-            display: flex;
+            position: relative; display: flex;
             align-items: center;
         }
-
         .input-wrapper i {
-            position: absolute;
-            left: 16px;
-            color: #94a3b8;
-            font-size: 1rem;
+            position: absolute; left: 16px;
+            color: #94a3b8; font-size: 1rem;
             pointer-events: none;
-            transition: color 0.2s ease;
         }
 
-        input {
+        input, select {
             width: 100%;
             padding: 0.85rem 1rem 0.85rem 3rem;
             border: 1.5px solid #e2e8f0;
@@ -222,106 +142,120 @@
             background: #f8fafd;
             transition: all 0.2s ease;
             color: #0b1e33;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.01);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
         }
-
-        input:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #2563eb;
             background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10), inset 0 2px 6px rgba(0,0,0,0.02);
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.10);
+        }
+        input::placeholder { color: #a8bbd4; font-size: 0.9rem; }
+
+        /* Two-column grid for small fields */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 550px) {
+            .grid-2 { grid-template-columns: 1fr; }
         }
 
-        input::placeholder {
-            color: #a8bbd4;
-            font-weight: 400;
+        /* Section headings */
+        .section-heading {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eef2f7;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .section-heading i {
+            color: #2563eb;
+            background: rgba(37,99,235,0.08);
+            padding: 0.35rem 0.5rem;
+            border-radius: 10px;
             font-size: 0.9rem;
         }
+        .section-sub {
+            color: #6b7f99;
+            font-size: 0.82rem;
+            margin-bottom: 1rem;
+            margin-top: -0.6rem;
+        }
 
-        /* ----- button ----- */
+        /* Parent cards */
+        .parent-card {
+            background: #f8fafd;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 1.4rem 1.4rem 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+        .parent-card .parent-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .parent-card .parent-head .title {
+            font-weight: 700;
+            color: #0b2b4a;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .parent-card .parent-head .title i {
+            color: #2563eb;
+        }
+        .pill {
+            display: inline-block;
+            padding: 0.15rem 0.7rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .pill-optional { background: #e2e8f0; color: #475569; }
+
         .btn-save {
             width: 100%;
             padding: 0.95rem 1.2rem;
-            margin-top: 0.5rem;
+            margin-top: 1.5rem;
             border: none;
             border-radius: 40px;
             background: #0b2b4a;
             color: white;
             font-weight: 600;
             font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.7rem;
+            display: flex; align-items: center;
+            justify-content: center; gap: 0.7rem;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 10px 18px -8px rgba(11, 43, 74, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 18px -8px rgba(11,43,74,0.3);
         }
-
-        .btn-save i {
-            font-size: 1rem;
-            transition: transform 0.2s ease;
-        }
-
         .btn-save:hover {
             background: #1a3f62;
             transform: scale(1.01) translateY(-2px);
-            box-shadow: 0 16px 28px -10px rgba(11, 43, 74, 0.4);
+            box-shadow: 0 16px 28px -10px rgba(11,43,74,0.4);
         }
+        .btn-save:hover i { transform: translateX(4px); }
 
-        .btn-save:active {
-            transform: scale(0.97);
-        }
-
-        .btn-save:hover i {
-            transform: translateX(4px);
-        }
-
-        /* ----- responsive ----- */
         @media (max-width: 550px) {
-            .card {
-                padding: 1.8rem 1.5rem 2rem;
-                border-radius: 28px;
-            }
-            .card-header h1 {
-                font-size: 1.4rem;
-            }
-            .subtitle {
-                padding-left: 0;
-                font-size: 0.9rem;
-            }
-            .dept-badge {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.3rem;
-                padding: 0.8rem 1.2rem;
-            }
-            .dept-badge .dept-name {
-                font-size: 0.95rem;
-                padding: 0.1rem 1rem;
-            }
-            input {
-                padding: 0.75rem 1rem 0.75rem 2.8rem;
-                font-size: 0.9rem;
-            }
-            .btn-save {
-                font-size: 0.95rem;
-                padding: 0.85rem 1rem;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .card {
-                padding: 1.5rem 1.2rem 1.8rem;
-            }
-            .card-header i {
-                font-size: 1.4rem;
-                padding: 0.3rem 0.4rem;
-            }
-            .card-header h1 {
-                font-size: 1.2rem;
-            }
+            .card { padding: 1.8rem 1.5rem 2rem; border-radius: 28px; }
+            .card-header h1 { font-size: 1.4rem; }
+            .subtitle { padding-left: 0; font-size: 0.9rem; }
+            .dept-badge { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+            input, select { font-size: 0.9rem; padding: 0.75rem 1rem 0.75rem 2.8rem; }
         }
     </style>
 </head>
@@ -330,13 +264,11 @@
 
 <div class="container">
 
-    <!-- Back link (original href preserved) -->
     <a href="{% url 'department_details' student.department.id %}" class="back-link">
         <i class="fas fa-arrow-left"></i>
         Back to Department
     </a>
 
-    <!-- ===== MAIN CARD ===== -->
     <div class="card">
 
         <div class="card-header">
@@ -345,21 +277,17 @@
         </div>
 
         <p class="subtitle">
-            <i class="fas fa-id-card" style="opacity:0.5; margin-right:0.3rem;"></i>
-            Update student information
+            <i class="fas fa-id-card" style="opacity:0.5;margin-right:0.3rem;"></i>
+            Update student information and parents
         </p>
 
-        <!-- Department badge (original data) -->
         <div class="dept-badge">
             <span class="label">
                 <i class="fas fa-building-columns"></i> Department
             </span>
-            <span class="dept-name">
-                {{ student.department.name }}
-            </span>
+            <span class="dept-name">{{ student.department.name }}</span>
         </div>
 
-        <!-- Error block (exactly as original) -->
         {% if error %}
             <div class="error">
                 <i class="fas fa-circle-exclamation"></i>
@@ -367,40 +295,233 @@
             </div>
         {% endif %}
 
-        <!-- ===== FORM ===== (action, method, csrf, fields unchanged) -->
         <form method="POST">
             {% csrf_token %}
 
+            <!-- ============== STUDENT DETAILS ============== -->
+            <div class="section-heading">
+                <i class="fas fa-user-graduate"></i>
+                Student Details
+            </div>
+
             <div class="form-group">
                 <label for="studentName">
-                    <i class="fas fa-user"></i> Student Name
+                    <i class="fas fa-user"></i> Student Name *
                 </label>
                 <div class="input-wrapper">
                     <i class="fas fa-user-pen"></i>
-                    <input
-                        type="text"
-                        name="name"
-                        id="studentName"
-                        value="{{ student.user.first_name }}"
-                        required
-                        autofocus
-                    >
+                    <input type="text" name="name" id="studentName"
+                           value="{{ student.user.first_name }}" required autofocus>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="registerNumber">
-                    <i class="fas fa-hashtag"></i> Register Number
+                    <i class="fas fa-hashtag"></i> Register Number *
                 </label>
                 <div class="input-wrapper">
                     <i class="fas fa-id-badge"></i>
-                    <input
-                        type="text"
-                        name="register_number"
-                        id="registerNumber"
-                        value="{{ student.register_number }}"
-                        required
-                    >
+                    <input type="text" name="register_number" id="registerNumber"
+                           value="{{ student.register_number }}" required>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-at"></i>
+                        <input type="email" name="email" id="email"
+                               value="{{ student.email|default:'' }}"
+                               placeholder="student@example.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">
+                        <i class="fas fa-phone"></i> Phone
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-mobile-screen"></i>
+                        <input type="text" name="phone" id="phone"
+                               value="{{ student.phone|default:'' }}"
+                               placeholder="+91 XXXXX XXXXX">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="gender">
+                        <i class="fas fa-venus-mars"></i> Gender
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user-tag"></i>
+                        <select name="gender" id="gender">
+                            <option value="" {% if not student.gender %}selected{% endif %}>— Not specified —</option>
+                            <option value="MALE"   {% if student.gender == "MALE" %}selected{% endif %}>Male</option>
+                            <option value="FEMALE" {% if student.gender == "FEMALE" %}selected{% endif %}>Female</option>
+                            <option value="OTHER"  {% if student.gender == "OTHER" %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="dob">
+                        <i class="fas fa-calendar"></i> Date of Birth
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-cake-candles"></i>
+                        <input type="date" name="dob" id="dob"
+                               value="{% if student.dob %}{{ student.dob|date:'Y-m-d' }}{% endif %}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="year">
+                        <i class="fas fa-layer-group"></i> Year
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-sort-numeric-up"></i>
+                        <input type="number" name="year" id="year" min="1" max="6"
+                               value="{% if student.year %}{{ student.year }}{% endif %}"
+                               placeholder="1 – 6">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="section">
+                        <i class="fas fa-table-columns"></i> Section
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-a"></i>
+                        <input type="text" name="section" id="section"
+                               value="{{ student.section|default:'' }}"
+                               placeholder="A / B / C">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============== PARENTS ============== -->
+            <div class="section-heading">
+                <i class="fas fa-users"></i>
+                Parents / Guardians
+            </div>
+            <p class="section-sub">
+                A student can have at most two parents. Leave a parent fully blank to remove it.
+            </p>
+
+            <!-- Parent 1 -->
+            <div class="parent-card">
+                <div class="parent-head">
+                    <span class="title">
+                        <i class="fas fa-user-friends"></i>
+                        Parent 1
+                    </span>
+                    <span class="pill pill-optional">Optional</span>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user-pen"></i>
+                        <input type="text" name="parent1_name"
+                               value="{% if parent1 %}{{ parent1.name }}{% endif %}"
+                               placeholder="Full name">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-at"></i>
+                            <input type="email" name="parent1_email"
+                                   value="{% if parent1 %}{{ parent1.email }}{% endif %}"
+                                   placeholder="parent@email.com">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Phone</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-mobile-screen"></i>
+                            <input type="text" name="parent1_phone"
+                                   value="{% if parent1 %}{{ parent1.phone }}{% endif %}"
+                                   placeholder="+91 XXXXX XXXXX">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom:0;">
+                    <label><i class="fas fa-heart"></i> Relationship</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user-tag"></i>
+                        <select name="parent1_relationship">
+                            <option value="FATHER"   {% if not parent1 or parent1.relationship == "FATHER" %}selected{% endif %}>Father</option>
+                            <option value="MOTHER"   {% if parent1 and parent1.relationship == "MOTHER" %}selected{% endif %}>Mother</option>
+                            <option value="GUARDIAN" {% if parent1 and parent1.relationship == "GUARDIAN" %}selected{% endif %}>Guardian</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parent 2 -->
+            <div class="parent-card">
+                <div class="parent-head">
+                    <span class="title">
+                        <i class="fas fa-user-friends"></i>
+                        Parent 2
+                    </span>
+                    <span class="pill pill-optional">Optional</span>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user-pen"></i>
+                        <input type="text" name="parent2_name"
+                               value="{% if parent2 %}{{ parent2.name }}{% endif %}"
+                               placeholder="Full name">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-at"></i>
+                            <input type="email" name="parent2_email"
+                                   value="{% if parent2 %}{{ parent2.email }}{% endif %}"
+                                   placeholder="parent@email.com">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Phone</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-mobile-screen"></i>
+                            <input type="text" name="parent2_phone"
+                                   value="{% if parent2 %}{{ parent2.phone }}{% endif %}"
+                                   placeholder="+91 XXXXX XXXXX">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom:0;">
+                    <label><i class="fas fa-heart"></i> Relationship</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user-tag"></i>
+                        <select name="parent2_relationship">
+                            <option value="MOTHER"   {% if not parent2 or parent2.relationship == "MOTHER" %}selected{% endif %}>Mother</option>
+                            <option value="FATHER"   {% if parent2 and parent2.relationship == "FATHER" %}selected{% endif %}>Father</option>
+                            <option value="GUARDIAN" {% if parent2 and parent2.relationship == "GUARDIAN" %}selected{% endif %}>Guardian</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 

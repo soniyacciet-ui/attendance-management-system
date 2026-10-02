@@ -286,6 +286,27 @@ path("student/portal/", views.student_portal, name="student_portal"),
 path("student/dispute/<int:attendance_id>/", views.raise_dispute, name="raise_dispute"),
 path("disputes/", views.manage_disputes, name="manage_disputes"),
 path("disputes/<int:dispute_id>/review/", views.review_dispute, name="review_dispute"),
+    # ---------- Bulk Student Import ----------
+    path(
+        "students/bulk-add/",
+        views.bulk_add_students,
+        name="bulk_add_students",
+    ),
+    path(
+        "students/bulk-add/download-template/",
+        views.bulk_download_template,
+        name="bulk_download_template",
+    ),
+    path(
+        "students/bulk-add/confirm/",
+        views.bulk_import_confirm,
+        name="bulk_import_confirm",
+    ),
+    path(
+        "students/bulk-add/error-report/",
+        views.bulk_download_error_report,
+        name="bulk_download_error_report",
+    ),
 ]
 
 

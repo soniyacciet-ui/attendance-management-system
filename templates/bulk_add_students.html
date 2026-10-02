@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Add Students | Attendance System</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: #f0f4fa;
+            color: #0b1e33;
+        }
+
+        /* ============ SIDEBAR (same as manage_students) ============ */
+        .sidebar {
+            position: fixed; left: 0; top: 0;
+            width: 260px; height: 100vh;
+            background: #0b2b4a; color: white;
+            padding: 1.5rem 1rem;
+            overflow-y: auto; z-index: 1000;
+            border-right: 1px solid rgba(255,255,255,0.04);
+            transition: transform 0.3s ease;
+        }
+        .logo {
+            font-size: 1.3rem; font-weight: 700;
+            padding: 0.5rem 0.5rem 0.8rem;
+            display: flex; align-items: center; gap: 0.6rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 0.3rem;
+        }
+        .logo i { color: #7bb3ff; font-size: 1.5rem; }
+        .college-name {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.7rem; padding: 0.5rem 0.5rem 1.2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.04em; text-transform: uppercase;
+        }
+        .menu-title {
+            font-size: 0.6rem; text-transform: uppercase;
+            letter-spacing: 0.08em; padding: 0.8rem 0.8rem 0.4rem;
+            color: rgba(255,255,255,0.3); font-weight: 600;
+        }
+        .menu a {
+            display: flex; align-items: center; gap: 0.8rem;
+            color: rgba(255,255,255,0.7); text-decoration: none;
+            padding: 0.7rem 1rem; border-radius: 12px;
+            margin-bottom: 0.1rem; font-size: 0.9rem;
+            font-weight: 500; transition: all 0.2s ease;
+        }
+        .menu a i {
+            width: 1.4rem; font-size: 1rem;
+            color: rgba(255,255,255,0.3);
+        }
+        .menu a:hover { background: rgba(255,255,255,0.06); color: white; }
+        .menu a:hover i { color: #7bb3ff; }
+        .menu a.active { background: rgba(37,99,235,0.25); color: white; }
+        .menu a.active i { color: #7bb3ff; }
+
+        /* ============ MAIN ============ */
+        .main { margin-left: 260px; min-height: 100vh; }
+
+        .topbar {
+            height: 72px; background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 0 2.2rem;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            position: sticky; top: 0; z-index: 100;
+            flex-wrap: wrap; gap: 0.5rem;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 0.8rem; }
+        .topbar-left .page-icon {
+            width: 44px; height: 44px; border-radius: 14px;
+            background: rgba(37,99,235,0.08);
+            display: flex; align-items: center; justify-content: center;
+            color: #2563eb; font-size: 1.4rem;
+        }
+        .topbar-left h1 {
+            font-size: 1.5rem; font-weight: 700; color: #0b2b4a;
+            margin: 0; letter-spacing: -0.02em;
+        }
+        .topbar-left .subtitle {
+            font-size: 0.8rem; color: #6b7f99;
+            display: block; margin-top: 0.05rem;
+        }
+        .back-link-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.6rem 1.4rem; background: white;
+            color: #0b2b4a; text-decoration: none;
+            border-radius: 40px; font-size: 0.85rem; font-weight: 500;
+            border: 1.5px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        .back-link-btn:hover { background: #f8fafd; border-color: #cbd5e1; }
+
+        /* ============ CONTENT ============ */
+        .content { padding: 2rem 2.2rem 3rem; }
+
+        /* ============ MESSAGES ============ */
+        .msg {
+            padding: 0.85rem 1.2rem; border-radius: 16px;
+            margin-bottom: 1rem; display: flex; align-items: center;
+            gap: 0.6rem; font-weight: 500; font-size: 0.9rem;
+        }
+        .msg-success { background: #dcfce7; color: #166534; border-left: 4px solid #16a34a; }
+        .msg-error   { background: #fef2f2; color: #991b1b; border-left: 4px solid #dc2626; }
+        .msg-warning { background: #fef3c7; color: #92400e; border-left: 4px solid #d97706; }
+
+        /* ============ CARD ============ */
+        .card {
+            background: white; border-radius: 24px;
+            padding: 2rem 2.2rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.03);
+            margin-bottom: 1.5rem;
+        }
+        .card h2 {
+            font-size: 1.2rem; font-weight: 700; color: #0b2b4a;
+            display: flex; align-items: center; gap: 0.6rem;
+            margin-bottom: 0.4rem;
+        }
+        .card h2 i { color: #2563eb; }
+        .card .lead {
+            color: #6b7f99; font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ============ STEPS ============ */
+        .steps {
+            display: flex; gap: 0.6rem; flex-wrap: wrap;
+            margin-bottom: 1.6rem;
+        }
+        .step {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.4rem 1rem; border-radius: 40px;
+            font-size: 0.78rem; font-weight: 600;
+            background: #f1f5f9; color: #64748b;
+        }
+        .step.active { background: #dbeafe; color: #1e40af; }
+        .step.done   { background: #dcfce7; color: #166534; }
+        .step .num {
+            width: 20px; height: 20px; border-radius: 50%;
+            background: rgba(0,0,0,0.06);
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        /* ============ UPLOAD BOX ============ */
+        .upload-box {
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            background: #f8fafd;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+        }
+        .upload-box:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        .upload-box .icon {
+            width: 64px; height: 64px; margin: 0 auto 1rem;
+            border-radius: 50%; background: #dbeafe;
+            color: #2563eb;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+        }
+        .upload-box h3 {
+            font-size: 1.05rem; font-weight: 600; color: #0b2b4a;
+            margin-bottom: 0.4rem;
+        }
+        .upload-box p {
+            font-size: 0.85rem; color: #6b7f99;
+            margin-bottom: 1rem;
+        }
+        .upload-box input[type=file] { display: none; }
+        .file-name {
+            margin-top: 1rem; font-size: 0.85rem;
+            color: #2563eb; font-weight: 600;
+        }
+
+        /* ============ BUTTONS ============ */
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.7rem 1.4rem; border: none;
+            border-radius: 40px; font-family: inherit;
+            font-size: 0.88rem; font-weight: 600;
+            cursor: pointer; text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .btn i { font-size: 0.85rem; }
+        .btn-primary {
+            background: #0b2b4a; color: white;
+            box-shadow: 0 4px 12px rgba(11,43,74,0.15);
+        }
+        .btn-primary:hover {
+            background: #1a3f62;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -6px rgba(11,43,74,0.25);
+        }
+        .btn-secondary {
+            background: white; color: #0b2b4a;
+            border: 1.5px solid #e2e8f0;
+        }
+        .btn-secondary:hover {
+            background: #f8fafd; border-color: #cbd5e1;
+        }
+        .btn-success {
+            background: #16a34a; color: white;
+            box-shadow: 0 4px 12px rgba(22,163,74,0.2);
+        }
+        .btn-success:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+        }
+        .btn-danger {
+            background: #dc2626; color: white;
+        }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn[disabled], .btn:disabled {
+            opacity: 0.5; cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-row {
+            display: flex; gap: 0.8rem; flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        /* ============ STATS ============ */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem; margin-bottom: 1.6rem;
+        }
+        .stat {
+            background: white; padding: 1.2rem 1.5rem;
+            border-radius: 20px;
+            border: 1px solid rgba(0,0,0,0.03);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+        }
+        .stat .label {
+            color: #6b7f99; font-size: 0.7rem;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            font-weight: 600; display: flex; align-items: center;
+            gap: 0.4rem;
+        }
+        .stat .label i { color: #2563eb; opacity: 0.5; }
+        .stat .value {
+            font-size: 1.8rem; font-weight: 700;
+            color: #0b2b4a; margin-top: 0.2rem;
+        }
+        .stat.valid .value { color: #16a34a; }
+        .stat.invalid .value { color: #dc2626; }
+
+        /* ============ TABLE ============ */
+        .table-wrap { overflow-x: auto; }
+        table {
+            width: 100%; border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+        thead { border-bottom: 1px solid #eef2f7; }
+        th {
+            text-align: left; padding: 0.8rem 0.6rem;
+            color: #4a6a8a; font-size: 0.68rem;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+        td {
+            padding: 0.7rem 0.6rem;
+            border-bottom: 1px solid #f0f4fa;
+            color: #1a3650; vertical-align: top;
+        }
+        tr.row-invalid td { background: #fef2f2; }
+        .badge {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            padding: 0.2rem 0.7rem; border-radius: 40px;
+            font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .badge-ok  { background: #dcfce7; color: #166534; }
+        .badge-err { background: #fee2e2; color: #991b1b; }
+        .row-error-list {
+            margin: 0.2rem 0 0; padding-left: 1.1rem;
+            color: #991b1b; font-size: 0.78rem;
+        }
+        .row-error-list li { margin-bottom: 0.15rem; }
+        .muted { color: #94a3b8; font-size: 0.78rem; }
+
+        /* ============ GLOBAL ERRORS ============ */
+        .global-errors {
+            background: #fef2f2; border-left: 4px solid #dc2626;
+            padding: 1rem 1.2rem; border-radius: 14px;
+            color: #991b1b; font-size: 0.88rem;
+            margin-bottom: 1.4rem;
+        }
+        .global-errors ul { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+
+        /* ============ INFO BOX ============ */
+        .info-box {
+            background: #eff6ff; border-left: 4px solid #2563eb;
+            padding: 1rem 1.2rem; border-radius: 14px;
+            color: #1e40af; font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+        .info-box strong { color: #0b2b4a; }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 900px) {
+            .stats { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); width: 280px; }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .topbar { padding: 0 1.2rem; height: auto; min-height: 64px; }
+            .content { padding: 1.2rem; }
+            .card { padding: 1.5rem; }
+            .btn-row .btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================== -->
+    <!-- SIDEBAR -->
+    <!-- ============================================== -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-clipboard-check"></i>
+            Attendance System
+        </div>
+        <div class="college-name">
+            <i class="fas fa-building-columns" style="margin-right:0.4rem;opacity:0.5;"></i>
+            {{ college.name }}
+        </div>
+
+        <div class="menu-title">Main Menu</div>
+        <div class="menu">
+            <a href="{% url 'admin_dashboard' %}">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </a>
+            <a href="{% url 'manage_departments' %}">
+                <i class="fas fa-building-columns"></i> Departments
+            </a>
+            <a href="{% url 'manage_students' %}" class="active">
+                <i class="fas fa-user-graduate"></i> Students
+            </a>
+            <a href="#">
+                <i class="fas fa-chalkboard-user"></i> Staff
+            </a>
+            <a href="#">
+                <i class="fas fa-user-tie"></i> HODs
+            </a>
+            <a href="#">
+                <i class="fas fa-clipboard-list"></i> Attendance
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- MAIN -->
+    <!-- ============================================== -->
+    <div class="main">
+
+        <!-- TOP BAR -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <div class="page-icon">
+                    <i class="fas fa-file-import"></i>
+                </div>
+                <div>
+                    <h1>Bulk Add Students</h1>
+                    <span class="subtitle">
+                        <i class="fas fa-info-circle" style="opacity:0.3;font-size:0.6rem;"></i>
+                        Upload an Excel file to add many students at once
+                    </span>
+                </div>
+            </div>
+            <a href="{% url 'manage_students' %}" class="back-link-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Students
+            </a>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- ============ MESSAGES ============ -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="msg msg-{{ message.tags|default:'success' }}">
+                        <i class="fas {% if message.tags == 'error' %}fa-circle-exclamation{% elif message.tags == 'warning' %}fa-triangle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- ============================================== -->
+            <!-- PREVIEW MODE (after upload) -->
+            <!-- ============================================== -->
+            {% if preview_mode %}
+
+                <!-- Steps -->
+                <div class="steps">
+                    <span class="step done"><span class="num">✓</span> Upload</span>
+                    <span class="step active"><span class="num">2</span> Preview & Validate</span>
+                    <span class="step"><span class="num">3</span> Import</span>
+                </div>
+
+                <!-- Global errors (bad headers, unreadable file etc.) -->
+                {% if global_errors %}
+                    <div class="global-errors">
+                        <strong><i class="fas fa-circle-exclamation"></i> File-level errors</strong>
+                        <ul>
+                            {% for e in global_errors %}<li>{{ e }}</li>{% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Stats -->
+                <div class="stats">
+                    <div class="stat">
+                        <div class="label"><i class="fas fa-list"></i> Total Rows</div>
+                        <div class="value">{{ total }}</div>
+                    </div>
+                    <div class="stat valid">
+                        <div class="label"><i class="fas fa-circle-check"></i> Valid Rows</div>
+                        <div class="value">{{ valid_count }}</div>
+                    </div>
+                    <div class="stat invalid">
+                        <div class="label"><i class="fas fa-triangle-exclamation"></i> Rows With Errors</div>
+                        <div class="value">{{ invalid_count }}</div>
+                    </div>
+                </div>
+
+                <!-- Preview card -->
+                <div class="card">
+                    <h2><i class="fas fa-clipboard-check"></i> Preview</h2>
+                    <p class="lead">
+                        Review each row before importing. Rows with errors are highlighted in red.
+                    </p>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Row</th>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Department</th>
+                                    <th>Parent 1</th>
+                                    <th>Parent 2</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in rows %}
+                                    <tr class="{% if row.errors %}row-invalid{% endif %}">
+                                        <td class="muted">{{ row.row_number }}</td>
+                                        <td>
+                                            <strong>{{ row.register_number|default:"—" }}</strong>
+                                        </td>
+                                        <td>
+                                            {{ row.name|default:"—" }}
+                                            {% if row.email %}<div class="muted">{{ row.email }}</div>{% endif %}
+                                        </td>
+                                        <td>{{ row.department_name|default:"—" }}</td>
+                                        <td>
+                                            {% if row.parents.0 %}
+                                                {{ row.parents.0.name }}
+                                                <div class="muted">{{ row.parents.0.relationship }}</div>
+                                            {% else %}—{% endif %}
+                                        </td>
+                                        <td>
+                                            {% if row.parents.1 %}
+                                                {{ row.parents.1.name }}
+                                                <div class="muted">{{ row.parents.1.relationship }}</div>
+                                            {% else %}—{% endif %}
+                                        </td>
+                                        <td>
+                                            {% if row.errors %}
+                                                <span class="badge badge-err">
+                                                    <i class="fas fa-xmark"></i> Error
+                                                </span>
+                                                <ul class="row-error-list">
+                                                    {% for e in row.errors %}<li>{{ e }}</li>{% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <span class="badge badge-ok">
+                                                    <i class="fas fa-check"></i> Valid
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Action row -->
+                    <div class="btn-row">
+                        {% if invalid_count == 0 and not global_errors %}
+                            <form method="POST"
+                                  action="{% url 'bulk_import_confirm' %}"
+                                  style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-cloud-arrow-up"></i>
+                                    Import {{ valid_count }} Valid Student{{ valid_count|pluralize }}
+                                </button>
+                            </form>
+                        {% else %}
+                            <button class="btn btn-success" disabled
+                                    title="Fix the errors and re-upload before importing">
+                                <i class="fas fa-ban"></i>
+                                Import Blocked — Fix Errors First
+                            </button>
+                        {% endif %}
+
+                        {% if invalid_count > 0 %}
+                            <a href="{% url 'bulk_download_error_report' %}"
+                               class="btn btn-danger">
+                                <i class="fas fa-file-arrow-down"></i>
+                                Download Error Report
+                            </a>
+                        {% endif %}
+
+                        <a href="{% url 'bulk_add_students' %}" class="btn btn-secondary">
+                            <i class="fas fa-rotate-left"></i>
+                            Upload a Different File
+                        </a>
+                    </div>
+                </div>
+
+            <!-- ============================================== -->
+            <!-- UPLOAD MODE -->
+            <!-- ============================================== -->
+            {% else %}
+
+                <!-- Steps -->
+                <div class="steps">
+                    <span class="step active"><span class="num">1</span> Upload</span>
+                    <span class="step"><span class="num">2</span> Preview & Validate</span>
+                    <span class="step"><span class="num">3</span> Import</span>
+                </div>
+
+                <!-- Step 1: template -->
+                <div class="card">
+                    <h2><i class="fas fa-file-excel"></i> Step 1 — Get the Template</h2>
+                    <p class="lead">
+                        Download the Excel template, fill in one row per student
+                        (with up to two parents), and save it as <strong>.xlsx</strong>.
+                    </p>
+                    <div class="info-box">
+                        <strong>Tip:</strong> Student ID and Student Name are required.
+                        Department must already exist in your college. A student can have at most 2 parents.
+                        Parent email is required whenever any parent field is filled in.
+                    </div>
+                    <a href="{% url 'bulk_download_template' %}" class="btn btn-secondary">
+                        <i class="fas fa-download"></i>
+                        Download Excel Template
+                    </a>
+                </div>
+
+                <!-- Step 2: upload -->
+                <div class="card">
+                    <h2><i class="fas fa-cloud-arrow-up"></i> Step 2 — Upload the Filled File</h2>
+                    <p class="lead">
+                        Choose the completed <strong>.xlsx</strong> file from your computer.
+                        The next page shows a preview — nothing is saved yet.
+                    </p>
+
+                    <form method="POST"
+                          enctype="multipart/form-data"
+                          id="bulkUploadForm">
+                        {% csrf_token %}
+
+                        <label for="excelFile" class="upload-box" id="dropZone">
+                            <div class="icon">
+                                <i class="fas fa-file-arrow-up"></i>
+                            </div>
+                            <h3>Click to choose a file</h3>
+                            <p>Only .xlsx — maximum 5 MB</p>
+                            <input type="file" name="excel_file" id="excelFile"
+                                   accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                   required>
+                            <div class="file-name" id="fileName"></div>
+                        </label>
+
+                        <div class="btn-row">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-eye"></i>
+                                Upload & Preview
+                            </button>
+                            <a href="{% url 'manage_students' %}" class="btn btn-secondary">
+                                <i class="fas fa-xmark"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+    <script>
+        // Show selected file name
+        const fileInput = document.getElementById("excelFile");
+        const fileNameEl = document.getElementById("fileName");
+        if (fileInput && fileNameEl) {
+            fileInput.addEventListener("change", function () {
+                if (this.files && this.files[0]) {
+                    fileNameEl.textContent = "Selected: " + this.files[0].name;
+                } else {
+                    fileNameEl.textContent = "";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

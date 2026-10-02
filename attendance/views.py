@@ -32,6 +32,16 @@ from .models import Subject
 from .models import Period 
 import os
 import csv
+from django.db import transaction
+from django.http import HttpResponse
+
+from .utils.excel_import import (
+    build_template_workbook,
+    build_error_report,
+    parse_and_validate,
+    StudentRow,
+    ParentRow,
+)
 
 
 
@@ -722,7 +732,7 @@ def edit_student(request, student_id):
         name = request.POST.get("name")
         register_number = request.POST.get("register_number")
 
-        # Check duplicate register number
+        # Duplicate register number check (unchanged logic)
         if Student.objects.filter(
             register_number=register_number
         ).exclude(id=student.id).exists():
@@ -736,26 +746,105 @@ def edit_student(request, student_id):
                 }
             )
 
+        # ---- Update Student scalar fields ----
         student.register_number = register_number
+        student.email = request.POST.get("email", student.email or "")
+        student.phone = request.POST.get("phone", student.phone or "")
+        student.gender = request.POST.get("gender", student.gender or "")
+        student.section = request.POST.get("section", student.section or "")
+
+        year_raw = request.POST.get("year", "").strip()
+        if year_raw:
+            try:
+                student.year = int(year_raw)
+            except ValueError:
+                pass
+
+        dob_raw = request.POST.get("dob", "").strip()
+        if dob_raw:
+            from datetime import datetime as _dt
+            for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y"):
+                try:
+                    student.dob = _dt.strptime(dob_raw, fmt).date()
+                    break
+                except ValueError:
+                    continue
+
+        # ---- Update User ----
         student.user.first_name = name
-
         student.user.username = register_number
-
         student.user.save()
         student.save()
+
+        # ---- Handle parents (max 2) ----
+        # Existing Parent rows for this student, ordered by id
+        existing = list(student.parents.order_by("id"))
+
+        # Parent 1 & Parent 2 fields come from the form
+        submitted = []
+        for i in (1, 2):
+            p_name = request.POST.get(f"parent{i}_name", "").strip()
+            p_email = request.POST.get(f"parent{i}_email", "").strip()
+            p_phone = request.POST.get(f"parent{i}_phone", "").strip()
+            p_rel = request.POST.get(f"parent{i}_relationship", "FATHER").strip()
+
+            if not (p_name or p_email or p_phone):
+                continue
+
+            submitted.append({
+                "name": p_name,
+                "email": p_email,
+                "phone": p_phone,
+                "relationship": p_rel or "FATHER",
+            })
+
+        # Enforce max 2
+        submitted = submitted[:2]
+
+        # Update or create
+        for idx, data in enumerate(submitted):
+            if idx < len(existing):
+                p = existing[idx]
+                p.name = data["name"]
+                p.email = data["email"]
+                p.phone = data["phone"]
+                p.relationship = data["relationship"]
+                p.save()
+            else:
+                Parent.objects.create(
+                    student=student,
+                    name=data["name"],
+                    email=data["email"],
+                    phone=data["phone"],
+                    relationship=data["relationship"],
+                    preferred_language="en",
+                    receive_email=True,
+                )
+
+        # Delete extra parents beyond what was submitted (keep at most 2)
+        for p in existing[len(submitted):]:
+            p.delete()
 
         return redirect(
             "department_details",
             department_id=student.department.id
         )
 
+    # ---- GET: build context with existing parents ----
+    parents = list(student.parents.order_by("id"))
+    parent1 = parents[0] if len(parents) > 0 else None
+    parent2 = parents[1] if len(parents) > 1 else None
+
     return render(
         request,
         "edit_student.html",
         {
-            "student": student
+            "student": student,
+            "parent1": parent1,
+            "parent2": parent2,
         }
     )
+
 
 @login_required
 def delete_student(request, student_id):
@@ -3902,3 +3991,331 @@ def review_dispute(request, dispute_id):
     return render(request, "review_dispute.html", {
         "dispute": dispute,
     })
+
+
+
+
+
+def _require_admin(request):
+    """Return (profile, error_response). Reused in every bulk view."""
+    profile = getattr(request.user, "userprofile", None)
+    if profile is None or profile.role != "ADMIN":
+        return None, redirect("home")
+    return profile, None
+
+
+def _serialise_rows(rows):
+    """Convert list[StudentRow] to JSON-safe dicts for the session."""
+    out = []
+    for r in rows:
+        out.append({
+            "row_number": r.row_number,
+            "register_number": r.register_number,
+            "name": r.name,
+            "email": r.email,
+            "phone": r.phone,
+            "gender": r.gender,
+            "dob": r.dob.isoformat() if r.dob else "",
+            "department_name": r.department_name,
+            "year": r.year,
+            "section": r.section,
+            "parents": [
+                {
+                    "name": p.name,
+                    "phone": p.phone,
+                    "email": p.email,
+                    "relationship": p.relationship,
+                }
+                for p in r.parents
+            ],
+            "errors": list(r.errors),
+        })
+    return out
+
+
+def _rows_from_session(payload):
+    """Rebuild StudentRow objects from session dicts."""
+    from datetime import date as _date
+    rows = []
+    for d in payload:
+        dob = None
+        if d.get("dob"):
+            try:
+                y, m, day = d["dob"].split("-")
+                dob = _date(int(y), int(m), int(day))
+            except Exception:
+                dob = None
+
+        parents = [
+            ParentRow(
+                name=p["name"],
+                phone=p["phone"],
+                email=p["email"],
+                relationship=p["relationship"],
+            )
+            for p in d.get("parents", [])
+        ]
+
+        rows.append(StudentRow(
+            row_number=d["row_number"],
+            register_number=d["register_number"],
+            name=d["name"],
+            email=d["email"],
+            phone=d["phone"],
+            gender=d["gender"],
+            dob=dob,
+            department_name=d["department_name"],
+            year=d["year"],
+            section=d["section"],
+            parents=parents,
+            errors=list(d.get("errors", [])),
+        ))
+    return rows
+
+
+# -----------------------------------------------------
+# 1. UPLOAD + PREVIEW
+# -----------------------------------------------------
+@login_required
+def bulk_add_students(request):
+    """
+    GET  → upload form
+    POST → parse+validate, show preview page
+    """
+    profile, err = _require_admin(request)
+    if err:
+        return err
+
+    college = profile.college
+
+    if request.method == "POST":
+        uploaded = request.FILES.get("excel_file")
+
+        if not uploaded:
+            django_messages.error(request, "Please choose an .xlsx file to upload.")
+            return redirect("bulk_add_students")
+
+        if not uploaded.name.lower().endswith(".xlsx"):
+            django_messages.error(request, "Only .xlsx files are accepted.")
+            return redirect("bulk_add_students")
+
+        if uploaded.size > 5 * 1024 * 1024:
+            django_messages.error(request, "File too large (max 5 MB).")
+            return redirect("bulk_add_students")
+
+        existing = set(
+            Student.objects.filter(college=college)
+            .values_list("register_number", flat=True)
+        )
+        dept_lookup = {
+            d.name.strip().lower(): d
+            for d in Department.objects.filter(college=college)
+        }
+
+        file_bytes = uploaded.read()
+        rows, global_errors = parse_and_validate(
+            file_bytes,
+            existing_register_numbers=existing,
+            department_lookup=dept_lookup,
+        )
+
+        request.session["bulk_import_rows"] = _serialise_rows(rows)
+        request.session["bulk_import_global_errors"] = global_errors
+        request.session["bulk_import_college_id"] = college.id
+
+        total = len(rows)
+        valid = sum(1 for r in rows if r.is_valid)
+        invalid = total - valid
+
+        return render(request, "bulk_add_students.html", {
+            "college": college,
+            "rows": _serialise_rows(rows),
+            "global_errors": global_errors,
+            "total": total,
+            "valid_count": valid,
+            "invalid_count": invalid,
+            "preview_mode": True,
+        })
+
+    return render(request, "bulk_add_students.html", {
+        "college": college,
+        "preview_mode": False,
+    })
+
+
+# -----------------------------------------------------
+# 2. DOWNLOAD TEMPLATE
+# -----------------------------------------------------
+@login_required
+def bulk_download_template(request):
+    profile, err = _require_admin(request)
+    if err:
+        return err
+
+    buf = build_template_workbook()
+    response = HttpResponse(
+        buf.getvalue(),
+        content_type=(
+            "application/vnd.openxmlformats-officedocument."
+            "spreadsheetml.sheet"
+        ),
+    )
+    response["Content-Disposition"] = (
+        'attachment; filename="student_bulk_upload_template.xlsx"'
+    )
+    return response
+
+
+# -----------------------------------------------------
+# 3. CONFIRM IMPORT
+# -----------------------------------------------------
+@login_required
+def bulk_import_confirm(request):
+    """
+    POST only. Reads the stashed rows, writes everything inside a single
+    transaction. Refuses to import if any row is invalid.
+    """
+    profile, err = _require_admin(request)
+    if err:
+        return err
+
+    if request.method != "POST":
+        return redirect("bulk_add_students")
+
+    college = profile.college
+    session_rows = request.session.get("bulk_import_rows") or []
+    session_college_id = request.session.get("bulk_import_college_id")
+
+    if not session_rows or session_college_id != college.id:
+        django_messages.error(request, "No pending import found. Please upload again.")
+        return redirect("bulk_add_students")
+
+    rows = _rows_from_session(session_rows)
+
+    invalid = [r for r in rows if not r.is_valid]
+    if invalid:
+        django_messages.error(
+            request,
+            f"Cannot import — {len(invalid)} row(s) still have errors. "
+            f"Fix them and re-upload.",
+        )
+        return redirect("bulk_add_students")
+
+    # Rebuild dept lookup fresh
+    dept_lookup = {
+        d.name.strip().lower(): d
+        for d in Department.objects.filter(college=college)
+    }
+
+    created_students = 0
+    created_parents = 0
+
+    try:
+        with transaction.atomic():
+            for row in rows:
+                dept = dept_lookup.get(row.department_name.strip().lower())
+                if dept is None:
+                    raise ValueError(
+                        f"Row {row.row_number}: department "
+                        f"'{row.department_name}' disappeared."
+                    )
+
+                # Safety net — DB may have changed since upload
+                if Student.objects.filter(
+                    register_number=row.register_number
+                ).exists():
+                    raise ValueError(
+                        f"Row {row.row_number}: Student ID "
+                        f"{row.register_number} was created after upload."
+                    )
+
+                # Create the Django login user (same pattern as add_student)
+                user = User.objects.create_user(
+                    username=row.register_number,
+                    password=row.register_number,   # default password
+                    first_name=row.name,
+                    email=row.email or "",
+                )
+
+                UserProfile.objects.create(
+                    user=user,
+                    college=college,
+                    role="STUDENT",
+                )
+
+                student = Student.objects.create(
+                    user=user,
+                    college=college,
+                    department=dept,
+                    register_number=row.register_number,
+                    email=row.email or "",
+                    phone=row.phone or "",
+                    gender=row.gender or "",
+                    dob=row.dob,
+                    year=row.year,
+                    section=row.section or "",
+                )
+                created_students += 1
+
+                # Parents (max 2, guaranteed by layout)
+                for p in row.parents[:2]:
+                    Parent.objects.create(
+                        student=student,
+                        name=p.name,
+                        email=p.email,
+                        phone=p.phone or "",
+                        relationship=p.relationship,
+                        preferred_language="en",
+                        receive_email=True,
+                    )
+                    created_parents += 1
+
+    except Exception as e:
+        django_messages.error(
+            request,
+            f"Import failed — nothing was saved. {e}",
+        )
+        return redirect("bulk_add_students")
+
+    # Clear session
+    request.session.pop("bulk_import_rows", None)
+    request.session.pop("bulk_import_global_errors", None)
+    request.session.pop("bulk_import_college_id", None)
+
+    django_messages.success(
+        request,
+        f"✓ Imported {created_students} student(s) and "
+        f"{created_parents} parent(s). "
+        f"Each new student's default password = their Student ID.",
+    )
+    return redirect("manage_students")
+
+
+# -----------------------------------------------------
+# 4. DOWNLOAD ERROR REPORT
+# -----------------------------------------------------
+@login_required
+def bulk_download_error_report(request):
+    profile, err = _require_admin(request)
+    if err:
+        return err
+
+    session_rows = request.session.get("bulk_import_rows") or []
+    if not session_rows:
+        django_messages.error(request, "No pending validation results.")
+        return redirect("bulk_add_students")
+
+    rows = _rows_from_session(session_rows)
+    buf = build_error_report(rows)
+
+    response = HttpResponse(
+        buf.getvalue(),
+        content_type=(
+            "application/vnd.openxmlformats-officedocument."
+            "spreadsheetml.sheet"
+        ),
+    )
+    response["Content-Disposition"] = (
+        'attachment; filename="bulk_import_errors.xlsx"'
+    )
+    return response

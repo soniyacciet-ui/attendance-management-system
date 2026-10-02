@@ -641,10 +641,17 @@
                     </span>
                 </div>
             </div>
-            <a href="#" class="add-btn">
-                <i class="fas fa-plus"></i>
-                Add Student
-            </a>
+                        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+                <a href="{% url 'bulk_add_students' %}" class="add-btn" style="background:#2563eb;">
+                    <i class="fas fa-file-import"></i>
+                    Bulk Add Students
+                </a>
+                <a href="#" class="add-btn">
+                    <i class="fas fa-plus"></i>
+                    Add Student
+                </a>
+            </div>
+        </div>
         </div>
 
         <!-- CONTENT -->
@@ -768,10 +775,17 @@
                         </div>
                         <h3>No Students Yet</h3>
                         <p>Start by adding your first student.</p>
-                        <a href="#" class="add-btn">
-                            <i class="fas fa-plus"></i>
-                            Add Student
-                        </a>
+                                               <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
+                            <a href="{% url 'bulk_add_students' %}" class="add-btn" style="background:#2563eb;">
+                                <i class="fas fa-file-import"></i>
+                                Bulk Add Students
+                            </a>
+                            <a href="#" class="add-btn">
+                                <i class="fas fa-plus"></i>
+                                Add Student
+                            </a>
+                        </div>
+                    </div>
                     </div>
 
                 {% endif %}
